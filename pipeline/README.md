@@ -1,20 +1,20 @@
-# Luxembourg par âge : pipeline
+# Luxembourg by Age: data pipeline
 
-Construit `../data/` (bâtiments, contexte, métadonnées) pour la page `../index.html`.
+Builds `../data/` (buildings, context, metadata) for the page `../index.html`.
 
-## Données à télécharger
+## Files to download
 
-Toutes depuis data.public.lu (ACT, CC0) :
+All from data.public.lu (ACT, CC0):
 
-| Fichier | Jeu de données |
+| File | Dataset |
 |---|---|
-| `ACT2023v2_Buildings3d_Footprints.gpkg` | Base de données nationale des bâtiments 3D 2023, « Empreintes 2D en GeoPackage » |
-| `ACT2023v2_bati3d_Luxembourg.gml` | même jeu, `act2023v2-bati3d-luxembourg.zip` : seule la première entrée (1,1 Go décompressé) est utile, les textures non |
-| `LOD1_par_commune/Luxembourg.gml` | Bâtiments 3D 2013 (LOD1), `lod1-par-commune.zip` |
+| `ACT2023v2_Buildings3d_Footprints.gpkg` | National 3D buildings database 2023, “2D footprints in GeoPackage” |
+| `ACT2023v2_bati3d_Luxembourg.gml` | same dataset, `act2023v2-bati3d-luxembourg.zip`: only the first entry (1.1 GB unzipped) is needed, not the textures |
+| `LOD1_par_commune/Luxembourg.gml` | 3D buildings 2013 (LOD1), `lod1-par-commune.zip` |
 
-Le reste (Wikidata, OpenStreetMap, features.geoportail.lu) est téléchargé par les scripts et mis en cache dans `work/`.
+Everything else (Wikidata, OpenStreetMap, features.geoportail.lu) is downloaded by the scripts and cached in `work/`.
 
-## Lancer
+## Run
 
 ```bash
 python -m venv venv && venv/bin/pip install geopandas pyogrio pyproj shapely pyarrow requests scipy osm2geojson
@@ -24,11 +24,11 @@ venv/bin/python 03_context.py work
 venv/bin/python 04_build.py work ../data
 ```
 
-Pour changer les estimations, modifier `priors.json` (part de chaque époque par quartier) et relancer `04_build.py`.
+To change the estimates, edit `priors.json` (share of each era per quarter) and rerun `04_build.py`.
 
-## Pièges rencontrés
+## Pitfalls
 
-- Le CityGML LOD2 2023 liste les coordonnées en (nord, est) : il faut inverser les axes.
-- Le LOD2 et les empreintes n'ont pas d'identifiant commun : jointure par le centre de la GroundSurface.
-- Les empreintes 2020 de l'ACT n'ont pas Luxembourg-Ville (trou dans le fichier) : non utilisées.
-- features.geoportail.lu renvoie au plus 2 000 objets par page, quelle que soit la `limit`.
+- The 2023 LOD2 CityGML lists coordinates as (northing, easting): the axes must be swapped.
+- LOD2 buildings and footprints share no identifier: they are joined by the centre of the ground surface.
+- The ACT 2020 footprints have a hole over Luxembourg City: not used.
+- features.geoportail.lu returns at most 2,000 features per page, whatever the `limit`.

@@ -1,46 +1,34 @@
-/* Luxembourg par âge: deck.gl view of data/buildings.bin (written by pipeline/04_build.py). */
+/* Luxembourg by Age: deck.gl view of data/buildings.bin (written by pipeline/04_build.py),
+   with the story of the city (story.js) and three languages (i18n.js). */
 (() => {
-    const { Deck, MapView, SolidPolygonLayer, PathLayer, TextLayer, ScatterplotLayer, COORDINATE_SYSTEM, DataFilterExtension } = deck;
+    const { Deck, MapView, SolidPolygonLayer, PathLayer, TextLayer, ScatterplotLayer, COORDINATE_SYSTEM, DataFilterExtension, FlyToInterpolator } = deck;
+    const { rulers: RULERS, chapters: CHAPTERS, intro: INTRO } = window.STORY;
+    const I18N = window.I18N;
 
-    const MIN_YEAR = 1000; // abbaye d'Altmünster, 1083
+    const MIN_YEAR = 960; // Siegfried's castle, 963
     const MAX_YEAR = 2025; // a few Wikidata openings postdate the 2023 survey
     const ERAS = [
-        { label: "Forteresse", sub: "avant 1815", from: MIN_YEAR, to: 1814, color: [104, 110, 236] },
-        { label: "Forteresse fédérale", sub: "1815–66", from: 1815, to: 1866, color: [66, 152, 236] },
-        { label: "Ville ouverte", sub: "1867–1918", from: 1867, to: 1918, color: [52, 198, 178] },
-        { label: "Entre-deux-guerres", sub: "1919–45", from: 1919, to: 1945, color: [140, 208, 98] },
-        { label: "Après-guerre", sub: "1946–70", from: 1946, to: 1970, color: [234, 214, 76] },
-        { label: "Place financière", sub: "1971–98", from: 1971, to: 1998, color: [246, 160, 62] },
-        { label: "1999–2010", sub: "", from: 1999, to: 2010, color: [240, 100, 72] },
-        { label: "2011 à aujourd'hui", sub: "", from: 2011, to: MAX_YEAR, color: [228, 62, 124] },
+        { from: MIN_YEAR, to: 1814, color: [104, 110, 236] },
+        { from: 1815, to: 1866, color: [66, 152, 236] },
+        { from: 1867, to: 1918, color: [52, 198, 178] },
+        { from: 1919, to: 1945, color: [140, 208, 98] },
+        { from: 1946, to: 1970, color: [234, 214, 76] },
+        { from: 1971, to: 1998, color: [246, 160, 62] },
+        { from: 1999, to: 2010, color: [240, 100, 72] },
+        { from: 2011, to: MAX_YEAR, color: [228, 62, 124] },
     ];
     const HEIGHT_STOPS = [[0, [46, 58, 110]], [8, [52, 120, 176]], [16, [60, 186, 164]], [30, [190, 214, 84]], [60, [246, 160, 62]], [120, [236, 72, 96]]];
     const MUTE = [58, 60, 66];
-    const SRC_LABEL = [
-        "Wikidata (date de création ou d'inauguration)",
-        "OpenStreetMap (start_date)",
-        "Couche « Période de construction » (geoportail.lu)",
-        "Absent du modèle 3D 2013 et de la couche des périodes",
-        "Estimée d'après le profil du quartier",
-    ];
-    // hand-placed; coordinates from Wikidata where it has them
+    // hand-placed; coordinates from Wikidata where it has them. Names are in i18n.js, same order.
     const LANDMARKS = [
-        ["Palais grand-ducal", 6.13221, 49.61096, "end"],
-        ["Cathédrale", 6.13139, 49.60972, "end"],
-        ["Casemates du Bock", 6.13698, 49.61178],
-        ["Abbaye de Neumünster", 6.13750, 49.60944],
-        ["Gare centrale", 6.13361, 49.59972],
-        ["Pont Adolphe", 6.12667, 49.60778],
-        ["Philharmonie", 6.14209, 49.61849],
-        ["Fort Thüngen", 6.13889, 49.61639],
-        ["Cour de justice de l'UE", 6.13944, 49.62000],
-        ["Glacis", 6.12364, 49.61675],
-        ["Centre hospitalier", 6.10109, 49.61870],
-        ["Stade de Luxembourg", 6.10940, 49.57860],
-    ];
+        [6.13221, 49.61096, "end"], [6.13139, 49.60972, "end"], [6.13698, 49.61178], [6.13750, 49.60944],
+        [6.13361, 49.59972], [6.12667, 49.60778], [6.14209, 49.61849], [6.13889, 49.61639],
+        [6.13944, 49.62000], [6.12364, 49.61675], [6.10109, 49.61870], [6.10940, 49.57860],
+    ].map((d, k) => ({ k, lon: d[0], lat: d[1], anchor: d[2] || "start" }));
 
     const $ = (id) => document.getElementById(id);
-    const state = { mode: "period", context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, hover: -1 };
+    const state = { lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1 };
+    const T = () => I18N[state.lang];
     let D; // decoded data
     let deckgl;
 
@@ -63,15 +51,22 @@
 
     const mix = (c, m, t) => c.map((v, j) => Math.round(v + (m[j] - v) * t));
 
+    function centroid(r) {
+        let x = 0, y = 0;
+        const m = r.length / 2;
+        for (let k = 0; k < r.length; k += 2) { x += r[k]; y += r[k + 1]; }
+        return [x / m, y / m];
+    }
+
     async function load() {
         const [meta, buf, ctx] = await Promise.all([
             fetch("data/meta.json").then((r) => r.json()),
             fetch("data/buildings.bin").then((r) => r.arrayBuffer()),
             fetch("data/context.json").then((r) => r.json()),
         ]);
-        const T = { int16: Int16Array, uint16: Uint16Array, uint8: Uint8Array, uint32: Uint32Array };
+        const Typed = { int16: Int16Array, uint16: Uint16Array, uint8: Uint8Array, uint32: Uint32Array };
         const a = {};
-        for (const l of meta.layout) a[l.key] = new T[l.type](buf, l.offset, l.length);
+        for (const l of meta.layout) a[l.key] = new Typed[l.type](buf, l.offset, l.length);
         const n = meta.count, q = 1 / meta.unitsPerMetre;
         const xy = new Float32Array(a.coords.length);
         for (let i = 0; i < xy.length; i++) xy[i] = a.coords[i] * q;
@@ -95,6 +90,7 @@
         D = { meta, ctx, n, polys, era, ...a, ids: Array.from({ length: n }, (_, i) => i) };
     }
 
+    /* ---------- map ---------- */
     function buildingColor(i) {
         let c = state.mode === "period" ? ERAS[D.era[i]].color : lerpColor(HEIGHT_STOPS, D.height[i] / 10);
         if (state.mode === "period" && D.src[i] === 4) c = mix(c, MUTE, 0.55);
@@ -102,23 +98,15 @@
     }
 
     function layers() {
-        const origin = D.meta.origin;
-        const common = { coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS, coordinateOrigin: origin };
+        const common = { coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS, coordinateOrigin: D.meta.origin };
         const out = [];
         if (state.context) {
-            out.push(new SolidPolygonLayer({
-                id: "green", ...common, data: D.ctx.greenRings, positionFormat: "XY",
-                getPolygon: (d) => d, getFillColor: [26, 46, 34],
-            }));
-            out.push(new SolidPolygonLayer({
-                id: "water", ...common, data: D.ctx.waterRings, positionFormat: "XY",
-                getPolygon: (d) => d, getFillColor: [32, 70, 112],
-            }));
+            out.push(new SolidPolygonLayer({ id: "green", ...common, data: D.ctx.greenRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: [26, 46, 34] }));
+            out.push(new SolidPolygonLayer({ id: "water", ...common, data: D.ctx.waterRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: [32, 70, 112] }));
         }
         out.push(new PathLayer({
             id: "quartiers", ...common, data: D.ctx.quartiers, positionFormat: "XY",
-            getPath: (d) => d.path,
-            getColor: [255, 255, 255, 34], getWidth: 1, widthUnits: "pixels",
+            getPath: (d) => d.path, getColor: [255, 255, 255, 34], getWidth: 1, widthUnits: "pixels",
         }));
         out.push(new SolidPolygonLayer({
             id: "buildings", ...common, data: D.ids, positionFormat: "XY",
@@ -132,34 +120,26 @@
             extensions: [new DataFilterExtension({ filterSize: 2 })],
             material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
             updateTriggers: { getFillColor: [state.mode] },
-            onHover: onHover,
+            onHover,
         }));
         out.push(new TextLayer({
             id: "quartier-names", ...common, data: D.ctx.quartiers,
             getPosition: (d) => d.centre, getText: (d) => d.name.toUpperCase(),
             getSize: 10.5, getColor: [200, 205, 215, 120], fontFamily: "Barlow Condensed, sans-serif",
-            fontWeight: 600, characterSet: "auto", getPixelOffset: [0, 0],
-            parameters: { depthCompare: "always" },
+            fontWeight: 600, characterSet: "auto", parameters: { depthCompare: "always" },
         }));
         out.push(new ScatterplotLayer({
-            id: "landmark-dots", data: LANDMARKS, getPosition: (d) => [d[1], d[2], 0],
+            id: "landmark-dots", data: LANDMARKS, getPosition: (d) => [d.lon, d.lat, 0],
             getRadius: 3, radiusUnits: "pixels", getFillColor: [255, 255, 255], parameters: { depthCompare: "always" },
         }));
         out.push(new TextLayer({
-            id: "landmarks", data: LANDMARKS, getPosition: (d) => [d[1], d[2], 0], getText: (d) => d[0],
-            getSize: 12.5, getColor: [255, 255, 255], getTextAnchor: (d) => d[3] || "start", getPixelOffset: (d) => [d[3] === "end" ? -7 : 7, 0],
+            id: "landmarks", data: LANDMARKS, getPosition: (d) => [d.lon, d.lat, 0], getText: (d) => T().landmarks[d.k],
+            getSize: 12.5, getColor: [255, 255, 255], getTextAnchor: (d) => d.anchor, getPixelOffset: (d) => [d.anchor === "end" ? -7 : 7, 0],
             fontFamily: "Barlow, sans-serif", fontWeight: 600, characterSet: "auto",
             outlineWidth: 3, outlineColor: [14, 17, 22, 230], fontSettings: { sdf: true },
-            parameters: { depthCompare: "always" },
+            parameters: { depthCompare: "always" }, updateTriggers: { getText: [state.lang] },
         }));
         return out;
-    }
-
-    function centroid(r) {
-        let x = 0, y = 0;
-        const m = r.length / 2;
-        for (let k = 0; k < r.length; k += 2) { x += r[k]; y += r[k + 1]; }
-        return [x / m, y / m];
     }
 
     function render() {
@@ -168,6 +148,13 @@
         updateCount();
         drawHist();
         placeHandles();
+        updateRulers();
+    }
+
+    function flyTo(view) {
+        deckgl.setProps({
+            initialViewState: { ...view, maxPitch: 75, transitionDuration: 2200, transitionInterpolator: new FlyToInterpolator({ speed: 1.6 }) },
+        });
     }
 
     /* ---------- hover ---------- */
@@ -175,22 +162,23 @@
         const tip = $("tooltip");
         const i = info.index;
         if (i == null || i < 0) { tip.hidden = true; return; }
+        const t = T();
         const src = D.src[i], y = D.year[i], lo = D.lo[i], hi = D.hi[i];
-        const name = D.meta.names[D.name[i]] || "Bâtiment";
-        let when;
-        if (src <= 1) when = String(y);
-        else if (src === 4) when = `vers ${y}`;
-        else when = `${lo}–${hi}`;
+        const quarter = D.meta.quartiers[D.quartier[i]];
+        const name = D.meta.names[D.name[i]] || t.building;
+        const when = src <= 1 ? String(y) : src === 4 ? `${t.about_} ${y}` : `${lo}–${hi}`;
         const ref = D.meta.refs[i];
         const srcLine = src === 4
-            ? `${SRC_LABEL[4]} ${D.meta.quartiers[D.quartier[i]]}, époque ${lo <= 1500 ? "avant " + (hi + 1) : lo + "–" + hi}`
-            : SRC_LABEL[src] + (ref ? ` · ${ref}` : "");
+            ? `${t.src[4]} ${quarter}, ${t.era} ${lo <= 1500 ? t.before + " " + (hi + 1) : lo + "–" + hi}`
+            : t.src[src] + (ref ? ` · ${ref}` : "");
+        const ruler = rulerAt(y);
         tip.innerHTML =
             `<b>${escapeHtml(name)}</b>` +
             `<div class="y">${when}</div>` +
+            (ruler ? `<div class="ruler">${escapeHtml(ruler.name[state.lang])}</div>` : "") +
             `<div class="src">${escapeHtml(srcLine)}</div>` +
-            `<div>${(D.height[i] / 10).toFixed(1).replace(".", ",")} m · ${escapeHtml(D.meta.quartiers[D.quartier[i]])}</div>` +
-            (D.flags[i] & 1 ? `<span class="tag">Monument protégé</span>` : "");
+            `<div>${(D.height[i] / 10).toFixed(1).replace(".", t.decimal)} m · ${escapeHtml(quarter)}</div>` +
+            (D.flags[i] & 1 ? `<span class="tag">${t.monument}</span>` : "");
         tip.hidden = false;
         const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
         let x = info.x + pad, yy = info.y + pad;
@@ -201,19 +189,21 @@
     }
 
     const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const fmt = (v) => v.toLocaleString(T().locale);
 
     /* ---------- counts & legend ---------- */
-    const fmt = (v) => v.toLocaleString("fr-FR");
-
     function updateCount() {
+        const t = T();
         let shown = 0;
         const maxSrc = state.recordedOnly ? 3 : 4;
         for (let i = 0; i < D.n; i++) if (D.year[i] >= state.lo && D.year[i] <= state.hi && D.src[i] <= maxSrc) shown++;
-        $("count").innerHTML = `<strong>${fmt(shown)}</strong> sur ${fmt(D.n)} bâtiments debout aujourd'hui`;
+        $("count").innerHTML = t.count(fmt(shown), fmt(D.n));
         $("year-label").textContent = state.lo > MIN_YEAR ? `${state.lo}–${state.hi}` : state.hi;
         $("range-label").textContent =
-            state.lo === MIN_YEAR && state.hi === MAX_YEAR ? "tous les bâtiments"
-                : state.lo === MIN_YEAR ? `construits jusqu'en ${state.hi}` : "construits sur la période";
+            state.lo === MIN_YEAR && state.hi === MAX_YEAR ? t.allBuildings
+                : state.lo === MIN_YEAR ? t.builtUpTo(state.hi) : t.builtInRange;
+        const r = rulerAt(state.hi);
+        $("ruler-label").textContent = r ? r.name[state.lang] : "";
         document.querySelectorAll("#legend-list li").forEach((li, k) => {
             const e = ERAS[k];
             li.classList.toggle("off", e.to < state.lo || e.from > state.hi);
@@ -221,37 +211,40 @@
     }
 
     function buildLegend() {
+        const t = T();
         const list = $("legend-list");
         list.innerHTML = "";
+        document.querySelector(".ramp-axis")?.remove();
         if (state.mode === "height") {
-            $("legend-title").textContent = "Hauteur";
+            $("legend-title").textContent = t.legendHeight;
             $("ramp").style.display = "";
             $("ramp").style.background = `linear-gradient(to right, ${HEIGHT_STOPS.map(([v, c]) => `rgb(${c}) ${(v / 120) * 100}%`).join(",")})`;
-            $("ramp").insertAdjacentHTML("afterend", "");
-            let ax = document.querySelector(".ramp-axis");
-            if (!ax) { ax = document.createElement("div"); ax.className = "ramp-axis"; $("ramp").after(ax); }
+            const ax = document.createElement("div");
+            ax.className = "ramp-axis";
             ax.innerHTML = "<span>0 m</span><span>30</span><span>60</span><span>120 m</span>";
+            $("ramp").after(ax);
             document.querySelector(".legend-note").style.display = "none";
             return;
         }
-        $("legend-title").textContent = "Période de construction";
+        $("legend-title").textContent = t.legendPeriod;
         $("ramp").style.display = "none";
-        document.querySelector(".ramp-axis")?.remove();
         document.querySelector(".legend-note").style.display = "";
         const counts = ERAS.map(() => 0);
         for (let i = 0; i < D.n; i++) if (!state.recordedOnly || D.src[i] < 4) counts[D.era[i]]++;
         ERAS.forEach((e, k) => {
+            const [label, sub] = t.eras[k];
             const li = document.createElement("li");
             li.tabIndex = 0;
             li.setAttribute("role", "button");
-            li.title = `Afficher seulement ${e.label} (${e.sub || e.from + "–" + e.to})`;
+            li.title = t.showOnly(`${label}${sub ? " (" + sub + ")" : ""}`);
             li.innerHTML = `<span class="swatch" style="background:rgb(${e.color})"></span>` +
-                `<span>${e.label}${e.sub ? `<small>${e.sub}</small>` : ""}</span><span class="n">${fmt(counts[k])}</span>`;
+                `<span>${label}${sub ? `<small>${sub}</small>` : ""}</span><span class="n">${fmt(counts[k])}</span>`;
             const pick = () => {
                 stop();
                 const alone = state.lo === e.from && state.hi === e.to;
                 state.lo = alone ? MIN_YEAR : e.from;
                 state.hi = alone ? MAX_YEAR : e.to;
+                followTimeline();
                 render();
             };
             li.addEventListener("click", pick);
@@ -260,9 +253,101 @@
         });
     }
 
+    /* ---------- story ---------- */
+    const rulerAt = (y) => RULERS.find((r) => y >= r.from && y < r.to) || (y >= MAX_YEAR ? RULERS[RULERS.length - 1] : null);
+    const chapterEnd = (k) => (k < CHAPTERS.length - 1 ? CHAPTERS[k + 1].year - 1 : MAX_YEAR);
+    function chapterAt(y) {
+        let k = -1;
+        CHAPTERS.forEach((c, j) => { if (y >= c.year) k = j; });
+        return k;
+    }
+
+    function goToChapter(k) {
+        stop();
+        state.chapter = k;
+        state.lo = MIN_YEAR;
+        state.hi = k < 0 ? MAX_YEAR : chapterEnd(k);
+        flyTo(k < 0 ? INTRO.view : CHAPTERS[k].view);
+        renderStory();
+        render();
+    }
+
+    // when the user moves the timeline, the story follows without moving the camera
+    function followTimeline() {
+        const k = chapterAt(state.hi);
+        if (k !== state.chapter && !(state.chapter === -1 && state.hi === MAX_YEAR && state.lo === MIN_YEAR)) {
+            state.chapter = k;
+            renderStory();
+        }
+    }
+
+    function renderStory() {
+        const t = T(), L = state.lang, k = state.chapter, n = CHAPTERS.length;
+        if (k < 0) {
+            $("story-step").textContent = t.intro;
+            $("story-year").textContent = `${CHAPTERS[0].year}–${MAX_YEAR}`;
+            $("story-title").textContent = INTRO.title[L];
+            $("story-ruler").textContent = "";
+            $("story-text").textContent = INTRO.text[L];
+            $("story-next").textContent = t.begin;
+        } else {
+            const c = CHAPTERS[k], r = rulerAt(c.year);
+            $("story-step").textContent = t.chapter(k + 1, n);
+            $("story-year").textContent = k === n - 1 ? String(c.year) : `${c.year}–${chapterEnd(k)}`;
+            $("story-title").textContent = c.title[L];
+            $("story-ruler").textContent = r ? r.name[L] : "";
+            $("story-text").textContent = c.text[L];
+            $("story-next").textContent = k === n - 1 ? t.restart : t.next;
+        }
+        $("story-prev").textContent = t.earlier;
+        $("story-prev").disabled = k < 0;
+        document.querySelectorAll(".tl-chapter").forEach((el, j) => el.classList.toggle("on", j === k));
+    }
+
+    function buildRulers() {
+        const box = $("rulers");
+        box.innerHTML = "";
+        const W = box.clientWidth || 1;
+        RULERS.forEach((r, j) => {
+            const a = yearToX(Math.max(r.from, MIN_YEAR)), b = yearToX(Math.min(r.to, MAX_YEAR + 1));
+            const el = document.createElement("div");
+            el.className = "tl-reign" + (j % 2 ? " alt" : "");
+            el.style.left = `${a * 100}%`;
+            el.style.width = `${(b - a) * 100}%`;
+            el.title = `${r.name[state.lang]} (${r.from}–${Math.min(r.to, MAX_YEAR)})`;
+            const label = r.short[state.lang];
+            if ((b - a) * W > label.length * 6.2 + 8) el.textContent = label;
+            el.dataset.from = r.from;
+            box.appendChild(el);
+        });
+        CHAPTERS.forEach((c, j) => {
+            const dot = document.createElement("button");
+            dot.type = "button";
+            dot.className = "tl-chapter";
+            dot.style.left = `${yearToX(c.year) * 100}%`;
+            dot.title = `${c.year} · ${c.title[state.lang]}`;
+            dot.setAttribute("aria-label", dot.title);
+            dot.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+            dot.addEventListener("click", () => goToChapter(j));
+            box.appendChild(dot);
+        });
+    }
+
+    function updateRulers() {
+        const cur = rulerAt(state.hi);
+        document.querySelectorAll(".tl-reign").forEach((el, j) => el.classList.toggle("on", RULERS[j] === cur));
+    }
+
+    function setStory(on) {
+        state.story = on;
+        document.body.classList.toggle("story-on", on);
+        $("t-story").classList.toggle("on", on);
+        $("t-story").setAttribute("aria-pressed", on);
+    }
+
     /* ---------- timeline ---------- */
     // early centuries are squeezed so the 19th and 20th get the room
-    const SPLIT = 1800, SPLIT_X = 0.16;
+    const SPLIT = 1800, SPLIT_X = 0.18;
     const yearToX = (y) => (y < SPLIT ? ((y - MIN_YEAR) / (SPLIT - MIN_YEAR)) * SPLIT_X : SPLIT_X + ((y - SPLIT) / (MAX_YEAR - SPLIT)) * (1 - SPLIT_X));
     const xToYear = (x) => Math.round(x < SPLIT_X ? MIN_YEAR + (x / SPLIT_X) * (SPLIT - MIN_YEAR) : SPLIT + ((x - SPLIT_X) / (1 - SPLIT_X)) * (MAX_YEAR - SPLIT));
 
@@ -308,9 +393,8 @@
     }
 
     function buildAxis() {
-        const ticks = window.innerWidth < 600 ? [1000, 1800, 1850, 1900, 1950, 2000] : [1000, 1500, 1800, 1850, 1900, 1950, 2000];
-        $("axis").innerHTML = ticks
-            .map((y) => `<span style="left:${yearToX(y) * 100}%">${y}</span>`).join("");
+        const ticks = window.innerWidth < 600 ? [1000, 1800, 1850, 1900, 1950, 2000] : [1000, 1200, 1400, 1600, 1800, 1850, 1900, 1950, 2000];
+        $("axis").innerHTML = ticks.map((y) => `<span style="left:${yearToX(y) * 100}%">${y}</span>`).join("");
     }
 
     function placeHandles() {
@@ -332,6 +416,7 @@
             const y = xToYear(Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)));
             if (which === "lo") state.lo = Math.min(y, state.hi);
             else state.hi = Math.max(y, state.lo);
+            followTimeline();
             render();
         };
         el.addEventListener("pointerdown", (ev) => {
@@ -350,6 +435,7 @@
             stop();
             if (which === "lo") state.lo = Math.max(MIN_YEAR, Math.min(state.lo + d, state.hi));
             else state.hi = Math.min(MAX_YEAR, Math.max(state.hi + d, state.lo));
+            followTimeline();
             render();
         });
     }
@@ -360,13 +446,14 @@
     function play() {
         state.playing = true;
         $("play").querySelector("svg").innerHTML = PAUSE_ICON;
-        $("play").setAttribute("aria-label", "Pause");
+        $("play").setAttribute("aria-label", T().pause);
         let x = state.hi >= MAX_YEAR ? yearToX(state.lo) : yearToX(state.hi);
         let last = performance.now();
         const step = (t) => {
-            x += ((t - last) / 18000);
+            x += (t - last) / 24000;
             last = t;
             state.hi = Math.max(state.lo, Math.min(MAX_YEAR, xToYear(Math.min(1, x))));
+            followTimeline();
             render();
             if (x >= 1) return stop();
             raf = requestAnimationFrame(step);
@@ -378,17 +465,59 @@
         state.playing = false;
         cancelAnimationFrame(raf);
         $("play").querySelector("svg").innerHTML = PLAY_ICON;
-        $("play").setAttribute("aria-label", "Lecture");
+        $("play").setAttribute("aria-label", T().play);
+    }
+
+    /* ---------- language ---------- */
+    function pickLang() {
+        const q = new URLSearchParams(location.search).get("lang");
+        if (I18N[q]) return q;
+        try {
+            const s = localStorage.getItem("lux-age-lang");
+            if (I18N[s]) return s;
+        } catch (e) { /* storage blocked */ }
+        const nav = (navigator.language || "en").slice(0, 2).toLowerCase();
+        return I18N[nav] ? nav : "en";
+    }
+
+    function setLang(l) {
+        state.lang = l;
+        try { localStorage.setItem("lux-age-lang", l); } catch (e) { /* storage blocked */ }
+        const t = T();
+        document.documentElement.lang = l;
+        document.title = t.pageTitle;
+        document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t[el.dataset.i18n]; });
+        document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
+        $("play").setAttribute("aria-label", state.playing ? t.pause : t.play);
+        $("h-lo").setAttribute("aria-label", t.startYear);
+        $("h-hi").setAttribute("aria-label", t.endYear);
+        $("close-story").setAttribute("aria-label", t.hideStory);
+        $("loading").textContent = t.loading;
+        if (!D) return;
+        $("about-body").innerHTML = t.aboutHtml;
+        fillAbout();
+        buildLegend();
+        buildRulers();
+        renderStory();
+        render();
+    }
+
+    function fillAbout() {
+        const s = D.meta.stats;
+        const pct = (v) => (v / s.total < 0.005 ? "<1 %" : `${Math.round((v / s.total) * 100)} %`);
+        $("about-stats").innerHTML = T().stats(s, fmt, pct).map((x) => `<li>${x}</li>`).join("");
+        $("built").textContent = new Date(D.meta.built).toLocaleDateString(T().locale, { day: "numeric", month: "long", year: "numeric" });
     }
 
     /* ---------- wiring ---------- */
     function wire() {
-        document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+        document.querySelectorAll(".seg button[data-mode]").forEach((b) => b.addEventListener("click", () => {
             state.mode = b.dataset.mode;
-            document.querySelectorAll(".seg button").forEach((o) => o.classList.toggle("on", o === b));
+            document.querySelectorAll(".seg button[data-mode]").forEach((o) => o.classList.toggle("on", o === b));
             buildLegend();
             render();
         }));
+        document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
         const toggle = (id, key) => $(id).addEventListener("click", () => {
             state[key] = !state[key];
             $(id).classList.toggle("on", state[key]);
@@ -398,6 +527,10 @@
         });
         toggle("t-context", "context");
         toggle("t-recorded", "recordedOnly");
+        $("t-story").addEventListener("click", () => setStory(!state.story));
+        $("close-story").addEventListener("click", () => setStory(false));
+        $("story-prev").addEventListener("click", () => goToChapter(Math.max(-1, state.chapter - 1)));
+        $("story-next").addEventListener("click", () => goToChapter(state.chapter >= CHAPTERS.length - 1 ? -1 : state.chapter + 1));
         $("open-about").addEventListener("click", () => $("about").showModal());
         $("close-about").addEventListener("click", () => $("about").close());
         $("about").addEventListener("click", (e) => { if (e.target === $("about")) $("about").close(); });
@@ -410,30 +543,19 @@
             const r = $("track").getBoundingClientRect();
             const y = xToYear((ev.clientX - r.left) / r.width);
             if (Math.abs(y - state.lo) < Math.abs(y - state.hi) && y < state.hi) state.lo = y; else state.hi = Math.max(y, state.lo);
+            followTimeline();
             render();
         });
-        window.addEventListener("resize", () => { buildAxis(); drawHist(); });
-    }
-
-    function fillAbout() {
-        const s = D.meta.stats;
-        const pct = (v) => (v / s.total < 0.005 ? "<1 %" : `${Math.round((v / s.total) * 100)} %`);
-        $("about-stats").innerHTML = [
-            `<li><strong>${fmt(s.documented)}</strong> bâtiments (${pct(s.documented)}) ont une date documentée (Wikidata, OpenStreetMap).</li>`,
-            `<li><strong>${fmt(s.period)}</strong> (${pct(s.period)}) sont datés par la couche des périodes 1999–2021.</li>`,
-            `<li><strong>${fmt(s.survey)}</strong> (${pct(s.survey)}) sont datés par comparaison des relevés ACT 2013 et 2023.</li>`,
-            `<li><strong>${fmt(s.estimated)}</strong> (${pct(s.estimated)}) ont une date estimée ; ${fmt(s.pre1999layer)} d'entre eux sont « avant 1999 » selon la couche des périodes.</li>`,
-            `<li><strong>${fmt(s.monuments)}</strong> sont des monuments protégés ; ${fmt(s.withHeight)} ont une hauteur mesurée.</li>`,
-        ].join("");
-        $("built").textContent = new Date(D.meta.built).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+        window.addEventListener("resize", () => { buildAxis(); buildRulers(); drawHist(); updateRulers(); renderStory(); });
     }
 
     async function main() {
+        setLang(pickLang());
         await load();
         deckgl = new Deck({
             parent: $("map"),
             views: new MapView({ repeat: false }),
-            initialViewState: { longitude: 6.1300, latitude: 49.6070, zoom: 13.4, pitch: 52, bearing: -18, maxPitch: 75 },
+            initialViewState: { ...INTRO.view, maxPitch: 75 },
             controller: true,
             layers: [],
             getCursor: ({ isHovering }) => (isHovering ? "pointer" : "grab"),
@@ -441,15 +563,13 @@
         });
         computeHist();
         buildAxis();
-        buildLegend();
-        fillAbout();
         wire();
-        render();
+        setLang(state.lang);
         $("loading").classList.add("done");
     }
 
     main().catch((e) => {
-        $("loading").textContent = "Impossible de charger les données.";
+        $("loading").textContent = T().loadError;
         console.error(e);
     });
 })();

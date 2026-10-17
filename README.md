@@ -1,30 +1,36 @@
-# Luxembourg par âge
+# Luxembourg by Age
 
-Les 23 373 bâtiments de la commune de Luxembourg en 3D, extrudés à leur hauteur mesurée et colorés selon leur année de construction. Inspiré de *Central London by Age* (plotbrief) et de *LAYRS: Amsterdam*.
+All 23,373 buildings of the commune of Luxembourg in 3D, extruded to their measured height and coloured by the year they were built, with the story of the city and of the rulers who held it, from Count Siegfried's castle in 963 to Grand Duke Guillaume in 2025. In English, French and Luxembourgish (`?lang=en|fr|lb`). Inspired by *Central London by Age* (plotbrief) and *LAYRS: Amsterdam*.
 
-Page statique : `index.html`, `app.js`, `style.css` et `data/` (1,5 Mo). Pour la voir en local :
+Live: https://krosamont.github.io/luxembourg-par-age/
+
+A static page: `index.html`, `app.js`, `style.css`, `story.js` (chapters and rulers), `i18n.js` (interface text) and `data/` (1.5 MB). To view it locally:
 
 ```bash
 python3 -m http.server 8765
 ```
 
-puis ouvrir http://127.0.0.1:8765/.
+then open http://127.0.0.1:8765/.
 
-## D'où viennent les dates
+## Where the dates come from
 
-| Source | Bâtiments |
+| Source | Buildings |
 |---|---|
-| Wikidata / OpenStreetMap (date documentée) | 98 |
-| Couche « Période de construction » 1999–2021, geoportail.lu | 2 683 |
-| Absent du modèle 3D ACT 2013, présent en 2023 | 456 |
-| Estimée d'après le profil du quartier (`pipeline/priors.json`) | 20 136 |
+| Wikidata / OpenStreetMap (documented date) | 98 |
+| Construction period layer 1999–2021, geoportail.lu | 2,683 |
+| Missing from the ACT 2013 3D model, present in 2023 | 456 |
+| Estimated from the quarter's profile (`pipeline/priors.json`) | 20,136 |
 
-Les estimations sont pâles sur la carte et peuvent être masquées. Méthode et limites détaillées dans « À propos des données » sur la page.
+Estimates are drawn pale on the map and can be hidden. The method and its limits are detailed under “About the data” on the page.
 
-## Reconstruire les données
+## Editing the story
 
-Voir [pipeline/README.md](pipeline/README.md).
+Each chapter in `story.js` has a year, a camera view and a title and text in `en`, `fr` and `lb`. The Luxembourgish text has not yet been reviewed by a native speaker.
+
+## Rebuilding the data
+
+See [pipeline/README.md](pipeline/README.md).
 
 ## Licences
 
-Bâtiments et hauteurs : ACT (CC0). Wikidata (CC0). OpenStreetMap (ODbL) : noms, quartiers, eau et espaces verts, donc les données dérivées dans `data/` sont sous ODbL.
+Buildings and heights: ACT (CC0). Wikidata (CC0). OpenStreetMap (ODbL): names, quarters, water and green areas, so the derived data in `data/` is under the ODbL.

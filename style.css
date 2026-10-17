@@ -63,8 +63,9 @@ button {
     text-transform: uppercase;
 }
 
-.brand h1 span {
+.brand h1 em {
     color: var(--accent);
+    font-style: normal;
 }
 
 .brand p {
@@ -335,20 +336,20 @@ button {
 
 .tl-track {
     position: relative;
-    height: 74px;
+    height: 96px;
 }
 
 #hist {
     position: absolute;
     left: 0;
-    top: 0;
+    top: 22px;
     width: 100%;
     height: 56px;
 }
 
 .tl-range {
     position: absolute;
-    top: 60px;
+    top: 82px;
     height: 4px;
     background: var(--accent);
     border-radius: 2px;
@@ -359,7 +360,7 @@ button {
     position: absolute;
     left: 0;
     right: 0;
-    top: 60px;
+    top: 82px;
     height: 4px;
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.12);
@@ -367,7 +368,7 @@ button {
 
 .handle {
     position: absolute;
-    top: 54px;
+    top: 76px;
     width: 16px;
     height: 16px;
     margin-left: -8px;
@@ -382,7 +383,7 @@ button {
     position: absolute;
     left: 0;
     right: 0;
-    top: 66px;
+    top: 88px;
     height: 12px;
     font-size: 10.5px;
     color: var(--muted);
@@ -391,6 +392,189 @@ button {
 .tl-axis span {
     position: absolute;
     transform: translateX(-50%);
+}
+
+.tl-year {
+    line-height: 1.1;
+}
+
+.tl-ruler {
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 500;
+    min-height: 15px;
+}
+
+.tl-rulers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 16px;
+}
+
+.tl-reign {
+    position: absolute;
+    top: 2px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.07);
+    border-left: 1px solid rgba(14, 17, 22, 0.9);
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 14px;
+    padding-left: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 2px;
+}
+
+.tl-reign.alt {
+    background: rgba(255, 255, 255, 0.11);
+}
+
+.tl-reign.on {
+    background: rgba(242, 193, 78, 0.28);
+    color: var(--text);
+}
+
+.tl-chapter {
+    position: absolute;
+    top: -3px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--bg);
+    background: var(--accent);
+    z-index: 1;
+}
+
+.tl-chapter.on {
+    background: var(--text);
+    transform: scale(1.35);
+}
+
+.tl-chapter:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* story */
+.story {
+    position: absolute;
+    right: 16px;
+    top: 104px;
+    width: 340px;
+    max-height: calc(100% - 290px);
+    overflow: auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 16px 14px;
+    z-index: 2;
+    backdrop-filter: blur(6px);
+    display: none;
+}
+
+body.story-on .story {
+    display: block;
+}
+
+.story-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.close-story {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1;
+    padding: 0 2px;
+}
+
+.story-year {
+    margin: 6px 0 0;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.story h2 {
+    margin: 4px 0 2px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.story-ruler {
+    margin: 0 0 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.story-ruler:not(:empty)::before {
+    content: "♛ ";
+    color: var(--accent);
+}
+
+.story-text {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #d3d8e0;
+}
+
+.story-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.story-nav button {
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.story-nav button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+}
+
+.story-nav button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.story-nav button:focus-visible,
+.close-story:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.tooltip .ruler {
+    color: var(--accent);
+    font-size: 11.5px;
+    margin-bottom: 2px;
 }
 
 /* about */
@@ -476,6 +660,24 @@ dialog .small {
 
 /* phone */
 @media (max-width: 760px) {
+    .story {
+        left: 16px;
+        right: 16px;
+        top: auto;
+        bottom: 170px;
+        width: auto;
+        max-height: 42vh;
+        z-index: 3;
+    }
+
+    body.story-on .legend {
+        display: none;
+    }
+
+    .tl-reign {
+        font-size: 0;
+    }
+
     .top {
         flex-direction: column;
         gap: 10px;
@@ -491,7 +693,7 @@ dialog .small {
 
     .legend {
         top: auto;
-        bottom: 148px;
+        bottom: 170px;
         width: auto;
         right: 16px;
         max-height: 34vh;
@@ -513,5 +715,15 @@ dialog .small {
 
     .tl-note {
         display: none;
+    }
+}
+
+@media (max-width: 1100px) and (min-width: 761px) {
+    .brand h1 {
+        font-size: 32px;
+    }
+
+    .story {
+        width: 300px;
     }
 }
