@@ -1,0 +1,22 @@
+{
+  "_note": "English Wikipedia titles per story chapter, in the order of story.js. 'photo' gives the article whose Wikidata image (P18) illustrates the chapter; 'links' are the source articles, linked in the reader's language when that Wikipedia has them. Run 05_media.py after editing.",
+  "intro": {"photo": "Luxembourg City", "links": ["Luxembourg City", "History of Luxembourg", "Fortress of Luxembourg"]},
+  "chapters": [
+    {"year": 963,  "photo": "Bock (Luxembourg)", "links": ["Siegfried, Count of Luxembourg", "Bock (Luxembourg)"]},
+    {"year": 1244, "photo": "Ermesinde, Countess of Luxembourg", "links": ["Ermesinde, Countess of Luxembourg"]},
+    {"year": 1308, "photo": "Henry VII, Holy Roman Emperor", "links": ["Henry VII, Holy Roman Emperor", "John of Bohemia", "Charles IV, Holy Roman Emperor", "House of Luxembourg"]},
+    {"year": 1443, "photo": "Philip the Good", "links": ["Philip the Good", "Spanish Netherlands"]},
+    {"year": 1684, "photo": "Neumünster Abbey", "links": ["Siege of Luxembourg (1684)", "Sébastien Le Prestre de Vauban", "Neumünster Abbey"]},
+    {"year": 1714, "photo": "Fort Thüngen", "links": ["Fort Thüngen", "Maria Theresa", "Austrian Netherlands"]},
+    {"year": 1795, "photo": "Siege of Luxembourg (1794–1795)", "links": ["Siege of Luxembourg (1794–1795)", "Forêts"]},
+    {"year": 1815, "photo": "Fortress of Luxembourg", "links": ["Congress of Vienna", "William I of the Netherlands", "Fortress of Luxembourg", "Treaty of London (1839)"]},
+    {"year": 1859, "photo": "Luxembourg railway station", "links": ["Luxembourg railway station", "Gare, Luxembourg"]},
+    {"year": 1867, "photo": "Treaty of London (1867)", "links": ["Luxembourg Crisis", "Treaty of London (1867)", "Édouard André Municipal Park"]},
+    {"year": 1890, "photo": "Adolphe Bridge", "links": ["Adolphe, Grand Duke of Luxembourg", "Adolphe Bridge"]},
+    {"year": 1919, "photo": "Charlotte, Grand Duchess of Luxembourg", "links": ["Charlotte, Grand Duchess of Luxembourg", "1919 Luxembourg referendum", "German occupation of Luxembourg during World War II"]},
+    {"year": 1952, "photo": "Grand Duchess Charlotte Bridge", "links": ["European Coal and Steel Community", "Kirchberg, Luxembourg", "Grand Duchess Charlotte Bridge", "Jean, Grand Duke of Luxembourg"]},
+    {"year": 1971, "photo": "Kirchberg, Luxembourg", "links": ["Economy of Luxembourg", "Old City of Luxembourg"]},
+    {"year": 2000, "photo": "Philharmonie Luxembourg", "links": ["Henri, Grand Duke of Luxembourg", "Philharmonie Luxembourg", "Mudam", "Trams in Luxembourg"]},
+    {"year": 2025, "photo": "Grand Ducal Palace, Luxembourg", "links": ["Guillaume, Grand Duke of Luxembourg"]}
+  ]
+}

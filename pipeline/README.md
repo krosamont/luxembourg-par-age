@@ -22,7 +22,10 @@ venv/bin/python 01_buildings.py ACT2023v2_Buildings3d_Footprints.gpkg ACT2023v2_
 venv/bin/python 02_evidence.py work LOD1_par_commune/Luxembourg.gml
 venv/bin/python 03_context.py work
 venv/bin/python 04_build.py work ../data
+venv/bin/python 05_media.py ../data
 ```
+
+`05_media.py` fetches the chapter photos and source links (topics in `story_topics.json`) and the photos of buildings dated from Wikidata, with each photo's author and licence from Wikimedia Commons.
 
 To change the estimates, edit `priors.json` (share of each era per quarter) and rerun `04_build.py`.
 

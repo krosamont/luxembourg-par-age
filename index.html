@@ -56,10 +56,15 @@
             <span id="story-step"></span>
             <button type="button" class="close-story" id="close-story">×</button>
         </div>
+        <figure class="story-photo" id="story-photo">
+            <img id="story-img" alt="" loading="lazy">
+            <figcaption id="story-credit"></figcaption>
+        </figure>
         <p class="story-year" id="story-year"></p>
         <h2 id="story-title"></h2>
         <p class="story-ruler" id="story-ruler"></p>
         <p class="story-text" id="story-text"></p>
+        <div class="story-links" id="story-links"></div>
         <div class="story-nav">
             <button type="button" id="story-prev"></button>
             <button type="button" id="story-next" class="primary"></button>
@@ -67,6 +72,11 @@
     </section>
 
     <div class="tooltip" id="tooltip" hidden></div>
+
+    <section class="card" id="card" hidden aria-live="polite">
+        <button type="button" class="close-story" id="close-card">×</button>
+        <div id="card-body"></div>
+    </section>
 
     <footer class="timeline">
         <div class="tl-head">

@@ -27,7 +27,7 @@
     ].map((d, k) => ({ k, lon: d[0], lat: d[1], anchor: d[2] || "start" }));
 
     const $ = (id) => document.getElementById(id);
-    const state = { lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1 };
+    const state = { lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1, card: -1 };
     const T = () => I18N[state.lang];
     let D; // decoded data
     let deckgl;
@@ -59,10 +59,11 @@
     }
 
     async function load() {
-        const [meta, buf, ctx] = await Promise.all([
+        const [meta, buf, ctx, media] = await Promise.all([
             fetch("data/meta.json").then((r) => r.json()),
             fetch("data/buildings.bin").then((r) => r.arrayBuffer()),
             fetch("data/context.json").then((r) => r.json()),
+            fetch("data/media.json").then((r) => r.json()),
         ]);
         const Typed = { int16: Int16Array, uint16: Uint16Array, uint8: Uint8Array, uint32: Uint32Array };
         const a = {};
@@ -87,7 +88,7 @@
             d.path = Float32Array.from([...d.ring, d.ring[0], d.ring[1]]);
             d.centre = centroid(d.ring);
         });
-        D = { meta, ctx, n, polys, era, ...a, ids: Array.from({ length: n }, (_, i) => i) };
+        D = { meta, ctx, media, n, polys, era, ...a, ids: Array.from({ length: n }, (_, i) => i) };
     }
 
     /* ---------- map ---------- */
@@ -121,6 +122,7 @@
             material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
             updateTriggers: { getFillColor: [state.mode] },
             onHover,
+            onClick: (info) => openCard(info.index),
         }));
         out.push(new TextLayer({
             id: "quartier-names", ...common, data: D.ctx.quartiers,
@@ -162,23 +164,7 @@
         const tip = $("tooltip");
         const i = info.index;
         if (i == null || i < 0) { tip.hidden = true; return; }
-        const t = T();
-        const src = D.src[i], y = D.year[i], lo = D.lo[i], hi = D.hi[i];
-        const quarter = D.meta.quartiers[D.quartier[i]];
-        const name = D.meta.names[D.name[i]] || t.building;
-        const when = src <= 1 ? String(y) : src === 4 ? `${t.about_} ${y}` : `${lo}–${hi}`;
-        const ref = D.meta.refs[i];
-        const srcLine = src === 4
-            ? `${t.src[4]} ${quarter}, ${t.era} ${lo <= 1500 ? t.before + " " + (hi + 1) : lo + "–" + hi}`
-            : t.src[src] + (ref ? ` · ${ref}` : "");
-        const ruler = rulerAt(y);
-        tip.innerHTML =
-            `<b>${escapeHtml(name)}</b>` +
-            `<div class="y">${when}</div>` +
-            (ruler ? `<div class="ruler">${escapeHtml(ruler.name[state.lang])}</div>` : "") +
-            `<div class="src">${escapeHtml(srcLine)}</div>` +
-            `<div>${(D.height[i] / 10).toFixed(1).replace(".", t.decimal)} m · ${escapeHtml(quarter)}</div>` +
-            (D.flags[i] & 1 ? `<span class="tag">${t.monument}</span>` : "");
+        tip.innerHTML = describe(i) + (D.meta.refs[i] ? `<div class="hint">${T().clickHint}</div>` : "");
         tip.hidden = false;
         const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
         let x = info.x + pad, yy = info.y + pad;
@@ -186,6 +172,79 @@
         if (yy + h > window.innerHeight - 8) yy = info.y - h - pad;
         tip.style.left = `${Math.max(8, x)}px`;
         tip.style.top = `${Math.max(8, yy)}px`;
+    }
+
+    // name, date, ruler, source, height: shared by the tooltip and the pinned card
+    function describe(i) {
+        const t = T();
+        const src = D.src[i], y = D.year[i], lo = D.lo[i], hi = D.hi[i];
+        const quarter = D.meta.quartiers[D.quartier[i]];
+        const name = nameOf(i);
+        const when = src <= 1 ? String(y) : src === 4 ? `${t.about_} ${y}` : `${lo}–${hi}`;
+        const ref = D.meta.refs[i];
+        const srcLine = src === 4
+            ? `${t.src[4]} ${quarter}, ${t.era} ${lo <= 1500 ? t.before + " " + (hi + 1) : lo + "–" + hi}`
+            : t.src[src] + (ref ? ` · ${ref}` : "");
+        const ruler = rulerAt(y);
+        return `<b>${escapeHtml(name)}</b>` +
+            `<div class="y">${when}</div>` +
+            (ruler ? `<div class="ruler">${escapeHtml(ruler.name[state.lang])}</div>` : "") +
+            `<div class="src">${escapeHtml(srcLine)}</div>` +
+            `<div>${(D.height[i] / 10).toFixed(1).replace(".", t.decimal)} m · ${escapeHtml(quarter)}</div>` +
+            (D.flags[i] & 1 ? `<span class="tag">${t.monument}</span>` : "");
+    }
+
+    // Wikidata label in the reader's language when the item has one
+    function nameOf(i) {
+        const item = D.media.items[D.meta.refs[i]];
+        const l = item && item.label;
+        return (l && (l[state.lang] || l.en || l.fr || l.lb)) || D.meta.names[D.name[i]] || T().building;
+    }
+
+    /* ---------- photos and links ---------- */
+    const ext = (url, text) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${text}</a>`;
+
+    function photoHtml(p, alt) {
+        if (!p) return "";
+        const lic = p.licenceUrl ? ext(p.licenceUrl, escapeHtml(p.licence)) : escapeHtml(p.licence);
+        return `<figure class="card-photo"><img src="${escapeHtml(p.thumb)}" alt="${escapeHtml(alt)}" loading="lazy">` +
+            `<figcaption>${T().photoBy}: ${ext(p.page, escapeHtml(p.artist))} · ${lic} · Wikimedia Commons</figcaption></figure>`;
+    }
+
+    // the Wikipedia article in the reader's language, else the first that exists, marked with its language
+    function wikiLink(l) {
+        const L = state.lang;
+        const lang = l.wiki[L] ? L : ["en", "fr", "lb"].find((x) => l.wiki[x]);
+        if (!lang) return "";
+        const label = l.label[lang] || l.label.en || l.qid;
+        return ext(l.wiki[lang], escapeHtml(label)) + (lang !== L ? ` <span class="lang-tag">${lang.toUpperCase()}</span>` : "");
+    }
+
+    function openCard(i) {
+        if (i == null || i < 0) return;
+        state.card = i;
+        const t = T(), ref = D.meta.refs[i] || "";
+        const item = ref.startsWith("Q") ? D.media.items[ref] : null;
+        const name = nameOf(i);
+        const links = [];
+        if (item) {
+            const w = wikiLink(item);
+            if (w) links.push(w);
+            links.push(ext(`https://www.wikidata.org/wiki/${ref}`, t.wikidata));
+        } else if (ref) {
+            links.push(ext(`https://www.openstreetmap.org/${ref}`, t.osm));
+        }
+        $("card-body").innerHTML =
+            (item ? photoHtml(item.photo, name) || `<p class="no-photo">${t.noPhoto}</p>` : "") +
+            describe(i) +
+            (links.length ? `<p class="card-links">${links.join(" · ")}</p>` : "");
+        $("card").hidden = false;
+        $("tooltip").hidden = true;
+    }
+
+    function closeCard() {
+        state.card = -1;
+        $("card").hidden = true;
     }
 
     const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -299,8 +358,23 @@
             $("story-text").textContent = c.text[L];
             $("story-next").textContent = k === n - 1 ? t.restart : t.next;
         }
+        const m = k < 0 ? D.media.intro : D.media.chapters[k];
+        const title = $("story-title").textContent;
+        if (m && m.photo) {
+            const p = m.photo;
+            $("story-img").src = p.thumb;
+            $("story-img").alt = title;
+            const lic = p.licenceUrl ? ext(p.licenceUrl, escapeHtml(p.licence)) : escapeHtml(p.licence);
+            $("story-credit").innerHTML = `${t.photoBy}: ${ext(p.page, escapeHtml(p.artist))} · ${lic} · Wikimedia Commons`;
+            $("story-photo").hidden = false;
+        } else {
+            $("story-photo").hidden = true;
+        }
+        const links = (m ? m.links : []).map(wikiLink).filter(Boolean);
+        $("story-links").innerHTML = links.length ? `<span>${t.readMore}:</span> ${links.join(" · ")}` : "";
         $("story-prev").textContent = t.earlier;
         $("story-prev").disabled = k < 0;
+        $("story").scrollTop = 0;
         document.querySelectorAll(".tl-chapter").forEach((el, j) => el.classList.toggle("on", j === k));
     }
 
@@ -500,6 +574,7 @@
         buildRulers();
         renderStory();
         render();
+        if (state.card >= 0) openCard(state.card);
     }
 
     function fillAbout() {
@@ -529,6 +604,8 @@
         toggle("t-recorded", "recordedOnly");
         $("t-story").addEventListener("click", () => setStory(!state.story));
         $("close-story").addEventListener("click", () => setStory(false));
+        $("close-card").addEventListener("click", closeCard);
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCard(); });
         $("story-prev").addEventListener("click", () => goToChapter(Math.max(-1, state.chapter - 1)));
         $("story-next").addEventListener("click", () => goToChapter(state.chapter >= CHAPTERS.length - 1 ? -1 : state.chapter + 1));
         $("open-about").addEventListener("click", () => $("about").showModal());

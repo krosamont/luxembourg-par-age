@@ -23,6 +23,7 @@ window.I18N = {
         decimal: ".",
         landmarks: ["Grand Ducal Palace", "Cathedral", "Bock Casemates", "Neumünster Abbey", "Central Station", "Adolphe Bridge", "Philharmonie", "Fort Thüngen", "EU Court of Justice", "Glacis", "Hospital (CHL)", "Stade de Luxembourg"],
         close: "Close",
+        readMore: "Read more", photoBy: "Photo", clickHint: "Click for photo and links", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "No photo on Wikimedia Commons yet",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> buildings (${p(s.documented)}) have a documented date (Wikidata, OpenStreetMap).`,
             `<strong>${f(s.period)}</strong> (${p(s.period)}) are dated by the 1999–2021 construction period layer.`,
@@ -53,14 +54,16 @@ window.I18N = {
 <li><strong>Heights.</strong> Measured height from the 2023 LOD2 3D model; the few buildings without a model take the median height.</li>
 </ul>
 <h3>The story</h3>
-<p>The chapters summarise the history of the city and of those who ruled it, from general sources (Wikipedia, the City of Luxembourg, the Luxembourg City History Museum). Before 1890 the sovereign of Luxembourg mostly ruled from elsewhere: Prague, Dijon, Madrid, Vienna, Paris or The Hague.</p>
+<p>The chapters summarise the history of the city and of those who ruled it, from general sources (Wikipedia, <a href="https://www.vdl.lu/" target="_blank" rel="noopener">the City of Luxembourg</a>, <a href="https://citymuseum.lu/" target="_blank" rel="noopener">the Luxembourg City History Museum</a>), linked under each chapter. Before 1890 the sovereign of Luxembourg mostly ruled from elsewhere: Prague, Dijon, Madrid, Vienna, Paris or The Hague.</p>
 <h3>Sources</h3>
 <ul>
-<li>National 3D buildings database 2023 and 2013 LOD1 model, Administration du cadastre et de la topographie (ACT), via data.public.lu. CC0.</li>
-<li>Construction period of buildings; national monuments and supplementary inventory, via features.geoportail.lu.</li>
-<li>Wikidata (CC0) and OpenStreetMap contributors (ODbL): dates, names, quarters, water and green areas.</li>
+<li><a href="https://data.public.lu/fr/datasets/base-de-donnees-nationale-des-batiments-3d-2023/" target="_blank" rel="noopener">National 3D buildings database 2023</a> and <a href="https://data.public.lu/fr/datasets/batiments-3d-2013-lod-1-level-of-detail-1/" target="_blank" rel="noopener">2013 LOD1 model</a>, Administration du cadastre et de la topographie (ACT), via data.public.lu. CC0.</li>
+<li><a href="https://features.geoportail.lu/collections/2214" target="_blank" rel="noopener">Construction period of buildings</a>; <a href="https://features.geoportail.lu/collections/709/0" target="_blank" rel="noopener">national monuments and supplementary inventory</a>, via features.geoportail.lu.</li>
+<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) and <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL): dates, names, quarters, water and green areas.</li>
+<li>Photos: <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>, each credited with its author and licence.</li>
+<li>Code and data pipeline: <a href="https://github.com/krosamont/luxembourg-par-age" target="_blank" rel="noopener">GitHub</a>.</li>
 </ul>
-<p class="small">Water and parks are today's and do not change with the timeline. Landmark labels are placed by hand. Inspired by <em>Central London by Age</em> (plotbrief) and <em>LAYRS: Amsterdam</em>, both inspired by <em>Paris, building by building</em>. Data built on <span id="built"></span>.</p>`,
+<p class="small">Water and parks are today's and do not change with the timeline. Landmark labels are placed by hand. Inspired by <a href="https://plotbrief.co.uk/Londonbyyear" target="_blank" rel="noopener"><em>Central London by Age</em></a> (plotbrief) and <a href="https://stop-token.com/lab/amsterdam/" target="_blank" rel="noopener"><em>LAYRS: Amsterdam</em></a>, both inspired by <em>Paris, building by building</em>. Data built on <span id="built"></span>.</p>`,
     },
 
     fr: {
@@ -86,6 +89,7 @@ window.I18N = {
         decimal: ",",
         landmarks: ["Palais grand-ducal", "Cathédrale", "Casemates du Bock", "Abbaye de Neumünster", "Gare centrale", "Pont Adolphe", "Philharmonie", "Fort Thüngen", "Cour de justice de l'UE", "Glacis", "Centre hospitalier", "Stade de Luxembourg"],
         close: "Fermer",
+        readMore: "En savoir plus", photoBy: "Photo", clickHint: "Cliquez pour la photo et les liens", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "Pas encore de photo sur Wikimedia Commons",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> bâtiments (${p(s.documented)}) ont une date documentée (Wikidata, OpenStreetMap).`,
             `<strong>${f(s.period)}</strong> (${p(s.period)}) sont datés par la couche des périodes 1999–2021.`,
@@ -116,14 +120,16 @@ window.I18N = {
 <li><strong>Hauteurs.</strong> Hauteur mesurée du modèle 3D LOD2 de 2023 ; les rares bâtiments sans modèle prennent la hauteur médiane.</li>
 </ul>
 <h3>L'histoire</h3>
-<p>Les chapitres résument l'histoire de la ville et de ceux qui l'ont gouvernée, d'après des sources générales (Wikipédia, Ville de Luxembourg, Lëtzebuerg City Museum). Avant 1890, le souverain du Luxembourg régnait surtout depuis ailleurs : Prague, Dijon, Madrid, Vienne, Paris ou La Haye.</p>
+<p>Les chapitres résument l'histoire de la ville et de ceux qui l'ont gouvernée, d'après des sources générales (Wikipédia, <a href="https://www.vdl.lu/" target="_blank" rel="noopener">Ville de Luxembourg</a>, <a href="https://citymuseum.lu/" target="_blank" rel="noopener">Lëtzebuerg City Museum</a>), citées sous chaque chapitre. Avant 1890, le souverain du Luxembourg régnait surtout depuis ailleurs : Prague, Dijon, Madrid, Vienne, Paris ou La Haye.</p>
 <h3>Sources</h3>
 <ul>
-<li>Base de données nationale des bâtiments 3D 2023 et modèle LOD1 2013, Administration du cadastre et de la topographie (ACT), via data.public.lu. CC0.</li>
-<li>Période de construction des bâtiments ; immeubles classés monument national et inscrits à l'inventaire supplémentaire, via features.geoportail.lu.</li>
-<li>Wikidata (CC0) et contributeurs OpenStreetMap (ODbL) : dates, noms, quartiers, eau et espaces verts.</li>
+<li><a href="https://data.public.lu/fr/datasets/base-de-donnees-nationale-des-batiments-3d-2023/" target="_blank" rel="noopener">Base de données nationale des bâtiments 3D 2023</a> et <a href="https://data.public.lu/fr/datasets/batiments-3d-2013-lod-1-level-of-detail-1/" target="_blank" rel="noopener">modèle LOD1 2013</a>, Administration du cadastre et de la topographie (ACT), via data.public.lu. CC0.</li>
+<li><a href="https://features.geoportail.lu/collections/2214" target="_blank" rel="noopener">Période de construction des bâtiments</a> ; <a href="https://features.geoportail.lu/collections/709/0" target="_blank" rel="noopener">immeubles classés monument national et inscrits à l'inventaire supplémentaire</a>, via features.geoportail.lu.</li>
+<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) et <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a> (ODbL) : dates, noms, quartiers, eau et espaces verts.</li>
+<li>Photos : <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>, chacune créditée avec son auteur et sa licence.</li>
+<li>Code et chaîne de traitement : <a href="https://github.com/krosamont/luxembourg-par-age" target="_blank" rel="noopener">GitHub</a>.</li>
 </ul>
-<p class="small">L'eau et les parcs sont ceux d'aujourd'hui et ne changent pas avec la frise. Les repères sont placés à la main. Inspiré de <em>Central London by Age</em> (plotbrief) et de <em>LAYRS: Amsterdam</em>, eux-mêmes inspirés de <em>Paris, building by building</em>. Données construites le <span id="built"></span>.</p>`,
+<p class="small">L'eau et les parcs sont ceux d'aujourd'hui et ne changent pas avec la frise. Les repères sont placés à la main. Inspiré de <a href="https://plotbrief.co.uk/Londonbyyear" target="_blank" rel="noopener"><em>Central London by Age</em></a> (plotbrief) et de <a href="https://stop-token.com/lab/amsterdam/" target="_blank" rel="noopener"><em>LAYRS: Amsterdam</em></a>, eux-mêmes inspirés de <em>Paris, building by building</em>. Données construites le <span id="built"></span>.</p>`,
     },
 
     lb: {
@@ -149,6 +155,7 @@ window.I18N = {
         decimal: ",",
         landmarks: ["Groussherzogleche Palais", "Kathedral", "Bock-Kasematten", "Abtei Neimënster", "Zentralgare", "Adolphe-Bréck", "Philharmonie", "Fort Thüngen", "EU-Geriichtshaff", "Glacis", "CHL", "Stade de Luxembourg"],
         close: "Zoumaachen",
+        readMore: "Méi gewuer ginn", photoBy: "Foto", clickHint: "Klickt fir d'Foto an d'Linken", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "Nach keng Foto op Wikimedia Commons",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> Gebaier (${p(s.documented)}) hunn en dokumentéierten Datum (Wikidata, OpenStreetMap).`,
             `<strong>${f(s.period)}</strong> (${p(s.period)}) sinn duerch d'Schicht vun de Bauperioden 1999–2021 datéiert.`,
@@ -179,13 +186,15 @@ window.I18N = {
 <li><strong>Héichten.</strong> Gemiessen Héicht aus dem LOD2-3D-Modell vun 2023; déi puer Gebaier ouni Modell kréien d'Medianhéicht.</li>
 </ul>
 <h3>D'Geschicht</h3>
-<p>D'Kapitele resüméieren d'Geschicht vun der Stad a vun deenen, déi se regéiert hunn, no allgemenge Quellen (Wikipedia, Stad Lëtzebuerg, Lëtzebuerg City Museum). Virun 1890 huet de Souverän vu Lëtzebuerg meeschtens vu soss enzwousch regéiert: vu Prag, Dijon, Madrid, Wien, Paräis oder Den Haag.</p>
+<p>D'Kapitele resüméieren d'Geschicht vun der Stad a vun deenen, déi se regéiert hunn, no allgemenge Quellen (Wikipedia, <a href="https://www.vdl.lu/" target="_blank" rel="noopener">Stad Lëtzebuerg</a>, <a href="https://citymuseum.lu/" target="_blank" rel="noopener">Lëtzebuerg City Museum</a>), ënner all Kapitel verlinkt. Virun 1890 huet de Souverän vu Lëtzebuerg meeschtens vu soss enzwousch regéiert: vu Prag, Dijon, Madrid, Wien, Paräis oder Den Haag.</p>
 <h3>Quellen</h3>
 <ul>
-<li>Nationaal Datebank vun de 3D-Gebaier 2023 an LOD1-Modell 2013, Administration du cadastre et de la topographie (ACT), iwwer data.public.lu. CC0.</li>
-<li>Bauperiod vun de Gebaier; Nationalmonumenter an zousätzlecht Inventar, iwwer features.geoportail.lu.</li>
-<li>Wikidata (CC0) an OpenStreetMap-Mataarbechter (ODbL): Datumen, Nimm, Quartieren, Waasser a Gréngflächen.</li>
+<li><a href="https://data.public.lu/fr/datasets/base-de-donnees-nationale-des-batiments-3d-2023/" target="_blank" rel="noopener">Nationaal Datebank vun de 3D-Gebaier 2023</a> an <a href="https://data.public.lu/fr/datasets/batiments-3d-2013-lod-1-level-of-detail-1/" target="_blank" rel="noopener">LOD1-Modell 2013</a>, Administration du cadastre et de la topographie (ACT), iwwer data.public.lu. CC0.</li>
+<li><a href="https://features.geoportail.lu/collections/2214" target="_blank" rel="noopener">Bauperiod vun de Gebaier</a>; <a href="https://features.geoportail.lu/collections/709/0" target="_blank" rel="noopener">Nationalmonumenter an zousätzlecht Inventar</a>, iwwer features.geoportail.lu.</li>
+<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) an <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mataarbechter</a> (ODbL): Datumen, Nimm, Quartieren, Waasser a Gréngflächen.</li>
+<li>Fotoen: <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>, all Foto mat sengem Auteur a senger Lizenz.</li>
+<li>Code an Donnéeën-Pipeline: <a href="https://github.com/krosamont/luxembourg-par-age" target="_blank" rel="noopener">GitHub</a>.</li>
 </ul>
-<p class="small">Waasser a Parke sinn déi vun haut an änneren net mat der Zäitlinn. D'Landmarke si mat der Hand gesat. Inspiréiert vu <em>Central London by Age</em> (plotbrief) a <em>LAYRS: Amsterdam</em>, déi selwer vu <em>Paris, building by building</em> inspiréiert sinn. Donnéeë gebaut den <span id="built"></span>.</p>`,
+<p class="small">Waasser a Parke sinn déi vun haut an änneren net mat der Zäitlinn. D'Landmarke si mat der Hand gesat. Inspiréiert vu <a href="https://plotbrief.co.uk/Londonbyyear" target="_blank" rel="noopener"><em>Central London by Age</em></a> (plotbrief) a <a href="https://stop-token.com/lab/amsterdam/" target="_blank" rel="noopener"><em>LAYRS: Amsterdam</em></a>, déi selwer vu <em>Paris, building by building</em> inspiréiert sinn. Donnéeë gebaut den <span id="built"></span>.</p>`,
     },
 };

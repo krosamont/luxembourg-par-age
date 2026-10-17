@@ -542,6 +542,12 @@ body.story-on .story {
     justify-content: space-between;
     gap: 8px;
     margin-top: 12px;
+    /* stays reachable while the chapter scrolls on small screens */
+    position: sticky;
+    bottom: -14px;
+    padding: 8px 0 14px;
+    margin-bottom: -14px;
+    background: linear-gradient(to top, rgb(18, 22, 29) 70%, rgba(18, 22, 29, 0));
 }
 
 .story-nav button {
@@ -575,6 +581,146 @@ body.story-on .story {
     color: var(--accent);
     font-size: 11.5px;
     margin-bottom: 2px;
+}
+
+/* photos and links */
+.story-photo,
+.card-photo {
+    margin: 8px 0 4px;
+}
+
+.story-photo[hidden] {
+    display: none;
+}
+
+.story-photo img,
+.card-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.story-photo figcaption,
+.card-photo figcaption {
+    margin-top: 4px;
+    font-size: 10.5px;
+    line-height: 1.35;
+    color: var(--muted);
+}
+
+.story-photo a,
+.card-photo a,
+.story-links a,
+.card-links a,
+dialog a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(242, 193, 78, 0.35);
+}
+
+.story-photo a:hover,
+.card-photo a:hover,
+.story-links a:hover,
+.card-links a:hover,
+dialog a:hover {
+    border-bottom-color: var(--accent);
+}
+
+.story-links {
+    margin-top: 10px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.story-links span:first-child {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.lang-tag {
+    font-size: 9.5px;
+    padding: 0 3px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--muted);
+}
+
+.tooltip .hint {
+    margin-top: 5px;
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.card {
+    position: absolute;
+    left: 16px;
+    top: 104px;
+    width: 300px;
+    max-height: calc(100% - 290px);
+    overflow: auto;
+    z-index: 3;
+    background: rgba(12, 15, 20, 0.96);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.card[hidden] {
+    display: none;
+}
+
+.card .close-story {
+    float: right;
+    margin: -4px -4px 0 6px;
+}
+
+.card b {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.card .y {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.card .ruler {
+    color: var(--accent);
+    font-size: 12px;
+}
+
+.card .src {
+    color: var(--muted);
+}
+
+.card .tag {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(242, 193, 78, 0.16);
+    color: var(--accent);
+    font-size: 11px;
+}
+
+.card-links {
+    margin: 8px 0 0;
+}
+
+.no-photo {
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 11.5px;
 }
 
 /* about */
@@ -660,6 +806,20 @@ dialog .small {
 
 /* phone */
 @media (max-width: 760px) {
+    .card {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        top: auto;
+        bottom: 170px;
+        max-height: 50vh;
+        z-index: 4;
+    }
+
+    .story-photo img {
+        aspect-ratio: 21 / 9;
+    }
+
     .story {
         left: 16px;
         right: 16px;
