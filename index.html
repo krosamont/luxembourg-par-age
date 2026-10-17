@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxembourg par âge</title>
+    <meta name="description"
+        content="Les 23 373 bâtiments de la Ville de Luxembourg en 3D, colorés selon leur année de construction.">
+    <link rel="icon" type="image/x-icon" href="data:,">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <header class="top">
+        <div class="brand">
+            <h1>Luxembourg <span>par âge</span></h1>
+            <p id="count">Chargement…</p>
+        </div>
+        <nav class="controls" aria-label="Affichage">
+            <div class="seg" role="group" aria-label="Couleur">
+                <button type="button" data-mode="period" class="on">Période</button>
+                <button type="button" data-mode="height">Hauteur</button>
+            </div>
+            <button type="button" class="toggle on" id="t-context" aria-pressed="true"><i></i>Eau &amp; parcs</button>
+            <button type="button" class="toggle" id="t-recorded" aria-pressed="false"><i></i>Dates relevées
+                seulement</button>
+            <button type="button" class="plain" id="open-about">À propos des données</button>
+        </nav>
+    </header>
+
+    <aside class="legend" id="legend">
+        <h2 id="legend-title">Période de construction</h2>
+        <div class="ramp" id="ramp"></div>
+        <ul id="legend-list"></ul>
+        <p class="legend-note"><span class="swatch muted"></span>Teinte pâle : date estimée d'après le quartier
+        </p>
+    </aside>
+
+    <div class="tooltip" id="tooltip" hidden></div>
+
+    <footer class="timeline">
+        <div class="tl-head">
+            <button type="button" id="play" aria-label="Lecture"><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                </svg></button>
+            <div class="tl-year"><strong id="year-label">2025</strong> <span id="range-label">tous les
+                    bâtiments</span></div>
+            <p class="tl-note">Seuls les bâtiments encore debout aujourd'hui figurent ici : ce qui a été démoli
+                manque, la ville passée paraît donc plus vide qu'elle ne l'était.</p>
+        </div>
+        <div class="tl-track" id="track">
+            <canvas id="hist"></canvas>
+            <div class="tl-range" id="range-fill"></div>
+            <button type="button" class="handle" id="h-lo" aria-label="Année de début"></button>
+            <button type="button" class="handle" id="h-hi" aria-label="Année de fin"></button>
+            <div class="tl-axis" id="axis"></div>
+        </div>
+    </footer>
+
+    <dialog id="about">
+        <button type="button" class="close" id="close-about">Fermer</button>
+        <h2>À propos des données</h2>
+        <p>Chaque bâtiment de la commune de Luxembourg, extrudé à sa hauteur mesurée et coloré selon son année de
+            construction. Tirez la poignée de droite pour fixer la dernière année affichée, celle de gauche pour
+            ouvrir une plage. Lancez la lecture pour voir les bâtiments apparaître dans l'ordre. Cliquez sur une
+            période de la légende pour l'isoler, survolez un bâtiment pour voir sa date et d'où elle vient.</p>
+
+        <h3>Ce que cette carte n'est pas</h3>
+        <p>Elle montre quand les bâtiments d'aujourd'hui ont été construits, pas la ville telle qu'elle était à
+            une date passée. Tout ce qui a été démoli manque : la forteresse démantelée après 1867, les
+            faubourgs détruits lors des sièges, les îlots reconstruits. Prenez la frise comme un filtre
+            par âge, pas comme la croissance de la ville.</p>
+
+        <h3>D'où viennent les dates</h3>
+        <ul id="about-stats"></ul>
+        <p>Aucune source ouverte ne donne l'année de construction de chaque bâtiment au Luxembourg. La carte
+            combine donc, par ordre de confiance :</p>
+        <ol>
+            <li><strong>Documentée</strong> : la date de création ou d'inauguration d'un élément Wikidata situé
+                dans l'empreinte, ou une étiquette <code>start_date</code> OpenStreetMap.</li>
+            <li><strong>Couche « Période de construction »</strong> du géoportail (Aménagement du territoire) :
+                une tranche par bâtiment de 1999 à 2021 (1999–2004, 2004–2006 … 2018–2021). L'année affichée est
+                répartie dans la tranche.</li>
+            <li><strong>Relevés ACT</strong> : un bâtiment de plus de 60 m² présent en 2023, absent du modèle 3D
+                de 2013 et de la couche des périodes, est daté entre 2014 et 2023.</li>
+            <li><strong>Estimée</strong> : pour tout le reste, surtout les bâtiments « avant 1999 », la date est
+                estimée. Chaque quartier reçoit une répartition par époque écrite à la main d'après son histoire
+                (la Ville-Haute et le Grund d'abord anciens, la Gare et le Limpertsberg surtout 1870–1930, le
+                Kirchberg après 1961…). Dans un quartier, les monuments protégés prennent les époques les plus
+                anciennes, puis les bâtiments bas et petits avant les grands et hauts, lissé sur 60 m pour que
+                les îlots restent cohérents. Ces dates sont pâles et marquées « estimée ».</li>
+        </ol>
+
+        <h3>Où les données sont imprécises</h3>
+        <ul>
+            <li><strong>Les estimations sont des suppositions.</strong> Elles suivent le profil du quartier, mais
+                n'importe quel bâtiment pris isolément peut être faux de plusieurs décennies. « Dates relevées
+                seulement » les masque.</li>
+            <li><strong>Répartitions par quartier.</strong> Elles sont écrites à la main et publiées avec le code
+                (<code>priors.json</code>) : à corriger dès qu'une meilleure source existe.</li>
+            <li><strong>Dates Wikidata.</strong> Une date de création peut être celle d'une institution ou d'une
+                rénovation plutôt que du bâtiment actuel.</li>
+            <li><strong>Façades et reconstructions.</strong> Un bâtiment reconstruit derrière une façade ancienne
+                peut porter l'une ou l'autre date.</li>
+            <li><strong>Hauteurs.</strong> Hauteur mesurée du modèle 3D LOD2 de 2023 ; les rares bâtiments sans
+                modèle prennent la hauteur médiane.</li>
+        </ul>
+
+        <h3>Sources</h3>
+        <ul>
+            <li>Base de données nationale des bâtiments 3D 2023 et modèle LOD1 2013, Administration du cadastre et
+                de la topographie (ACT), via data.public.lu. CC0.</li>
+            <li>Période de construction des bâtiments ; immeubles classés monument national et inscrits à
+                l'inventaire supplémentaire, via features.geoportail.lu.</li>
+            <li>Wikidata (CC0) et contributeurs OpenStreetMap (ODbL) : dates, noms, quartiers, eau et espaces
+                verts.</li>
+        </ul>
+        <p class="small">L'eau et les parcs sont ceux d'aujourd'hui et ne changent pas avec la frise. Les repères
+            sont placés à la main. Inspiré de <em>Central London by Age</em> (plotbrief) et de <em>LAYRS:
+                Amsterdam</em>, eux-mêmes inspirés de <em>Paris, building by building</em>. Données construites le
+            <span id="built"></span>.</p>
+    </dialog>
+
+    <div class="loading" id="loading">Élévation de 23 373 bâtiments…</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/deck.gl@9.2.11/dist.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
