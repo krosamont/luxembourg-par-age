@@ -91,6 +91,8 @@
         </div>
         <div class="tl-track" id="track">
             <div class="tl-rulers" id="rulers"></div>
+            <div class="tl-events" id="events"></div>
+            <div class="tl-bubble" id="bubble" hidden></div>
             <canvas id="hist"></canvas>
             <div class="tl-range" id="range-fill"></div>
             <button type="button" class="handle" id="h-lo"></button>
@@ -105,6 +107,7 @@
     </dialog>
 
     <div class="loading" id="loading">…</div>
+    <div class="building" id="building" hidden></div>
 
     <script src="https://cdn.jsdelivr.net/npm/deck.gl@9.2.11/dist.min.js"></script>
     <script src="i18n.js"></script>

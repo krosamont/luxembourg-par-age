@@ -24,6 +24,37 @@ window.STORY = {
         { from: 2025, to: 2026, short: { en: "Guill.", fr: "Guill.", lb: "Guill." }, name: { en: "Grand Duke Guillaume", fr: "Grand-duc Guillaume", lb: "Groussherzog Guillaume" } },
     ],
 
+    // dated events shown along the timeline, told as the timeline crosses them
+    events: [
+        { year: 963, text: { en: "Count Siegfried acquires the Bock rock", fr: "Le comte Sigefroid acquiert le rocher du Bock", lb: "De Grof Siegfried kritt de Bockfiels" } },
+        { year: 1244, text: { en: "Ermesinde grants the town a charter", fr: "Ermesinde accorde une charte à la ville", lb: "D'Ermesinde gëtt der Stad e Fräiheetsbréif" } },
+        { year: 1354, text: { en: "Luxembourg becomes a duchy", fr: "Luxembourg devient un duché", lb: "Lëtzebuerg gëtt en Herzogtum" } },
+        { year: 1443, text: { en: "Burgundy takes the city by night", fr: "La Bourgogne prend la ville de nuit", lb: "Burgund hëlt d'Stad an der Nuecht" } },
+        { year: 1644, text: { en: "The Spanish dig the first casemates", fr: "Les Espagnols creusent les premières casemates", lb: "D'Spuenier grouwen déi éischt Kasematten" } },
+        { year: 1684, text: { en: "Louis XIV's siege; Vauban rebuilds the fortress", fr: "Siège de Louis XIV ; Vauban reconstruit la forteresse", lb: "Belagerung vum Louis XIV.; de Vauban baut d'Festung nei" } },
+        { year: 1688, text: { en: "Neumünster Abbey is rebuilt in the Grund", fr: "L'abbaye de Neumünster est reconstruite au Grund", lb: "D'Abtei Neimënster gëtt am Gronn nei gebaut" } },
+        { year: 1732, text: { en: "The Austrians build Fort Thüngen", fr: "Les Autrichiens bâtissent le fort Thüngen", lb: "D'Éisträicher bauen de Fort Thüngen" } },
+        { year: 1795, text: { en: "The French take the fortress after a 7-month blockade", fr: "Les Français prennent la forteresse après 7 mois de blocus", lb: "D'Fransouse huelen d'Festung no 7 Méint Blockade" } },
+        { year: 1815, text: { en: "The Congress of Vienna creates the Grand Duchy", fr: "Le congrès de Vienne crée le Grand-Duché", lb: "De Wiener Kongress schaaft d'Groussherzogtum" } },
+        { year: 1839, text: { en: "The western part goes to Belgium", fr: "La partie occidentale revient à la Belgique", lb: "De westlechen Deel geet u Belsch" } },
+        { year: 1859, text: { en: "The first railway station opens", fr: "La première gare ouvre", lb: "Déi éischt Gare mécht op" } },
+        { year: 1867, text: { en: "Treaty of London: the fortress must go", fr: "Traité de Londres : la forteresse doit disparaître", lb: "Londoner Vertrag: d'Festung muss fort" } },
+        { year: 1883, text: { en: "Demolition of the fortress ends", fr: "Fin du démantèlement de la forteresse", lb: "Den Ofrappe vun der Festung ass fäerdeg" } },
+        { year: 1890, text: { en: "Adolphe of Nassau-Weilburg becomes Grand Duke", fr: "Adolphe de Nassau-Weilbourg devient grand-duc", lb: "Den Adolphe vun Nassau-Weilburg gëtt Groussherzog" } },
+        { year: 1903, text: { en: "The Adolphe Bridge opens", fr: "Le pont Adolphe est inauguré", lb: "D'Adolphe-Bréck gëtt ageweit" } },
+        { year: 1913, text: { en: "The new station building is finished", fr: "Le nouveau bâtiment de la gare est achevé", lb: "Dat neit Garegebai ass fäerdeg" } },
+        { year: 1940, text: { en: "German occupation begins", fr: "Début de l'occupation allemande", lb: "D'däitsch Besatzung fänkt un" } },
+        { year: 1944, text: { en: "Luxembourg City is liberated", fr: "Libération de la ville de Luxembourg", lb: "D'Stad Lëtzebuerg gëtt befreit" } },
+        { year: 1952, text: { en: "The ECSC High Authority settles in Luxembourg", fr: "La Haute Autorité de la CECA s'installe à Luxembourg", lb: "D'Héich Autoritéit vun der EGKS kënnt op Lëtzebuerg" } },
+        { year: 1961, text: { en: "Development of the Kirchberg plateau begins", fr: "Début de l'aménagement du plateau du Kirchberg", lb: "Den Ausbau vum Kierchbierger Plateau fänkt un" } },
+        { year: 1966, text: { en: "The Red Bridge reaches Kirchberg", fr: "Le pont Rouge relie le Kirchberg", lb: "Déi Rout Bréck verbënnt de Kierchbierg" } },
+        { year: 1994, text: { en: "Old quarters and fortifications join the UNESCO list", fr: "Vieux quartiers et fortifications inscrits à l'UNESCO", lb: "Al Quartieren a Festungswierker op d'UNESCO-Lëscht" } },
+        { year: 2005, text: { en: "The Philharmonie opens", fr: "La Philharmonie ouvre", lb: "D'Philharmonie mécht op" } },
+        { year: 2008, text: { en: "The towers of the Court of Justice are inaugurated", fr: "Inauguration des tours de la Cour de justice", lb: "D'Tierm vum Geriichtshaff ginn ageweit" } },
+        { year: 2017, text: { en: "The tram returns to the city", fr: "Le tram revient en ville", lb: "Den Tram kënnt zeréck an d'Stad" } },
+        { year: 2025, text: { en: "Guillaume becomes Grand Duke", fr: "Guillaume devient grand-duc", lb: "De Guillaume gëtt Groussherzog" } },
+    ],
+
     intro: {
         title: {
             en: "A thousand years in one map",

@@ -2,7 +2,7 @@
    with the story of the city (story.js) and three languages (i18n.js). */
 (() => {
     const { Deck, MapView, SolidPolygonLayer, PathLayer, TextLayer, ScatterplotLayer, COORDINATE_SYSTEM, DataFilterExtension, FlyToInterpolator } = deck;
-    const { rulers: RULERS, chapters: CHAPTERS, intro: INTRO } = window.STORY;
+    const { rulers: RULERS, chapters: CHAPTERS, intro: INTRO, events: EVENTS } = window.STORY;
     const I18N = window.I18N;
 
     const MIN_YEAR = 960; // Siegfried's castle, 963
@@ -88,7 +88,11 @@
             d.path = Float32Array.from([...d.ring, d.ring[0], d.ring[1]]);
             d.centre = centroid(d.ring);
         });
-        D = { meta, ctx, media, n, polys, era, ...a, ids: Array.from({ length: n }, (_, i) => i) };
+        const ids = Array.from({ length: n }, (_, i) => i);
+        // ids in order of year, to pick the buildings rising in a range of years
+        const byYear = Int32Array.from(ids).sort((x, y) => a.year[x] - a.year[y]);
+        const yearsSorted = Int16Array.from(byYear, (i) => a.year[i]);
+        D = { meta, ctx, media, n, polys, era, ...a, ids, byYear, yearsSorted };
     }
 
     /* ---------- map ---------- */
@@ -96,6 +100,59 @@
         let c = state.mode === "period" ? ERAS[D.era[i]].color : lerpColor(HEIGHT_STOPS, D.height[i] / 10);
         if (state.mode === "period" && D.src[i] === 4) c = mix(c, MUTE, 0.55);
         return c;
+    }
+
+    /* ---------- buildings rising ----------
+       When the end year moves forward, the buildings it reveals rise from the ground over GROW_MS.
+       grow.yg is the year up to which every building is fully up; grow.hist records when the end
+       year passed each value, which gives each rising building its start time. */
+    const GROW_MS = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 900;
+    const grow = { yg: MAX_YEAR, hist: [], ids: [], key: "", frame: 0, raf: 0 };
+
+    const upperBound = (arr, v) => {
+        let a = 0, b = arr.length;
+        while (a < b) { const m = (a + b) >> 1; if (arr[m] <= v) a = m + 1; else b = m; }
+        return a;
+    };
+
+    function trackGrowth() {
+        if (!GROW_MS || state.hi < grow.yg) {
+            grow.yg = state.hi;
+            grow.hist = [];
+            return;
+        }
+        if (state.hi === grow.yg) return;
+        const last = grow.hist[grow.hist.length - 1];
+        if (!last || last[1] !== state.hi) grow.hist.push([performance.now(), state.hi]);
+        if (!grow.raf) grow.raf = requestAnimationFrame(growTick);
+    }
+
+    function growTick() {
+        const now = performance.now();
+        while (grow.hist.length && now - grow.hist[0][0] >= GROW_MS) grow.yg = Math.max(grow.yg, grow.hist.shift()[1]);
+        if (!grow.hist.length) grow.yg = Math.max(grow.yg, state.hi);
+        grow.frame++;
+        grow.raf = grow.hist.length ? requestAnimationFrame(growTick) : 0;
+        // while playing or building, their own loop redraws every frame
+        if (!state.playing && !state.building) deckgl.setProps({ layers: layers() });
+    }
+
+    function risingIds() {
+        const key = `${grow.yg}|${state.hi}|${state.lo}|${state.recordedOnly}`;
+        if (key !== grow.key) {
+            grow.key = key;
+            const a = upperBound(D.yearsSorted, Math.max(grow.yg, state.lo - 1)), b = upperBound(D.yearsSorted, state.hi);
+            const maxSrc = state.recordedOnly ? 3 : 4;
+            grow.ids = Array.from(D.byYear.subarray(a, b)).filter((i) => D.src[i] <= maxSrc);
+        }
+        return grow.ids;
+    }
+
+    function riseOf(i) {
+        const y = D.year[i], now = performance.now();
+        const h = grow.hist.find((e) => e[1] >= y);
+        const p = h ? Math.min(1, Math.max(0, (now - h[0]) / GROW_MS)) : 1;
+        return 1 - Math.pow(1 - p, 3);
     }
 
     function layers() {
@@ -117,13 +174,24 @@
             getElevation: (i) => D.height[i] / 10,
             getFillColor: buildingColor,
             getFilterValue: (i) => [D.year[i], D.src[i]],
-            filterRange: [[state.lo, state.hi], [0, state.recordedOnly ? 3 : 4]],
+            filterRange: [[state.lo, Math.min(state.hi, grow.yg)], [0, state.recordedOnly ? 3 : 4]],
             extensions: [new DataFilterExtension({ filterSize: 2 })],
             material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
             updateTriggers: { getFillColor: [state.mode] },
             onHover,
             onClick: (info) => openCard(info.index),
         }));
+        if (grow.yg < state.hi) {
+            out.push(new SolidPolygonLayer({
+                id: "buildings-rising", ...common, data: risingIds(), positionFormat: "XY",
+                extruded: true, wireframe: false,
+                getPolygon: (i) => D.polys[i],
+                getElevation: (i) => (D.height[i] / 10) * riseOf(i),
+                getFillColor: (i) => mix(buildingColor(i), [255, 236, 190], 0.35 * (1 - riseOf(i))),
+                material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
+                updateTriggers: { getElevation: grow.frame, getFillColor: [grow.frame, state.mode] },
+            }));
+        }
         out.push(new TextLayer({
             id: "quartier-names", ...common, data: D.ctx.quartiers,
             getPosition: (d) => d.centre, getText: (d) => d.name.toUpperCase(),
@@ -146,11 +214,58 @@
 
     function render() {
         $("tooltip").hidden = true; // the hovered building may just have been filtered out
+        trackGrowth();
         deckgl.setProps({ layers: layers() });
         updateCount();
         drawHist();
         placeHandles();
         updateRulers();
+        updateEvents();
+    }
+
+    /* ---------- dated events on the timeline ---------- */
+    function buildEvents() {
+        const box = $("events");
+        box.innerHTML = "";
+        EVENTS.forEach((e, j) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "tl-event";
+            b.style.left = `${yearToX(e.year) * 100}%`;
+            b.title = `${e.year} · ${e.text[state.lang]}`;
+            b.setAttribute("aria-label", b.title);
+            b.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+            b.addEventListener("click", () => {
+                stop();
+                state.lo = MIN_YEAR;
+                state.hi = e.year;
+                followTimeline();
+                render();
+            });
+            box.appendChild(b);
+        });
+    }
+
+    // the latest event at or before the end year is told in a bubble above the timeline
+    let lastEvent = -2;
+    function updateEvents() {
+        let k = -1;
+        EVENTS.forEach((e, j) => { if (e.year <= state.hi) k = j; });
+        if (state.building || (state.hi >= MAX_YEAR && !state.playing && state.chapter < 0)) k = -1;
+        document.querySelectorAll(".tl-event").forEach((el, j) => el.classList.toggle("on", j === k));
+        const bub = $("bubble");
+        if (k < 0) { bub.hidden = true; lastEvent = -1; return; }
+        const e = EVENTS[k];
+        if (k !== lastEvent) {
+            bub.innerHTML = `<b>${e.year}</b> ${escapeHtml(e.text[state.lang])}`;
+            bub.classList.remove("pop");
+            void bub.offsetWidth; // restart the pop animation
+            bub.classList.add("pop");
+            lastEvent = k;
+        }
+        bub.hidden = false;
+        const W = $("track").clientWidth, w = bub.offsetWidth;
+        bub.style.left = `${Math.min(W - w / 2, Math.max(w / 2, yearToX(e.year) * W))}px`;
     }
 
     function flyTo(view) {
@@ -524,7 +639,7 @@
         let x = state.hi >= MAX_YEAR ? yearToX(state.lo) : yearToX(state.hi);
         let last = performance.now();
         const step = (t) => {
-            x += (t - last) / 24000;
+            x += (t - last) / 36000;
             last = t;
             state.hi = Math.max(state.lo, Math.min(MAX_YEAR, xToYear(Math.min(1, x))));
             followTimeline();
@@ -535,11 +650,42 @@
         raf = requestAnimationFrame(step);
     }
     function stop() {
+        if (state.building) endBuild();
         if (!state.playing) return;
         state.playing = false;
         cancelAnimationFrame(raf);
         $("play").querySelector("svg").innerHTML = PLAY_ICON;
         $("play").setAttribute("aria-label", T().play);
+    }
+
+    /* ---------- opening: the city builds itself ---------- */
+    let buildRaf = 0;
+    function buildCity() {
+        if (!GROW_MS) return;
+        state.building = true;
+        state.hi = MIN_YEAR;
+        grow.yg = MIN_YEAR;
+        grow.hist = [];
+        const t0 = performance.now(), dur = 5000;
+        const step = (t) => {
+            const p = Math.min(1, (t - t0) / dur);
+            state.hi = xToYear(p * p * (3 - 2 * p)); // ease in and out across the timeline
+            $("building").textContent = `${T().buildingCity} ${Math.round(p * 100)} %`;
+            render();
+            if (p >= 1) return endBuild();
+            buildRaf = requestAnimationFrame(step);
+        };
+        $("building").hidden = false;
+        buildRaf = requestAnimationFrame(step);
+    }
+    function endBuild() {
+        cancelAnimationFrame(buildRaf);
+        state.building = false;
+        $("building").hidden = true;
+        if (state.hi < MAX_YEAR && state.chapter < 0 && !state.playing) {
+            state.hi = MAX_YEAR;
+            render();
+        }
     }
 
     /* ---------- language ---------- */
@@ -572,6 +718,7 @@
         fillAbout();
         buildLegend();
         buildRulers();
+        buildEvents();
         renderStory();
         render();
         if (state.card >= 0) openCard(state.card);
@@ -623,7 +770,7 @@
             followTimeline();
             render();
         });
-        window.addEventListener("resize", () => { buildAxis(); buildRulers(); drawHist(); updateRulers(); renderStory(); });
+        window.addEventListener("resize", () => { buildAxis(); buildRulers(); buildEvents(); drawHist(); updateRulers(); updateEvents(); renderStory(); });
     }
 
     async function main() {
@@ -643,6 +790,7 @@
         wire();
         setLang(state.lang);
         $("loading").classList.add("done");
+        buildCity();
     }
 
     main().catch((e) => {

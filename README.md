@@ -25,7 +25,7 @@ Estimates are drawn pale on the map and can be hidden. The method and its limits
 
 ## Editing the story
 
-Each chapter in `story.js` has a year, a camera view and a title and text in `en`, `fr` and `lb`. The Luxembourgish text has not yet been reviewed by a native speaker.
+Each chapter in `story.js` has a year, a camera view and a title and text in `en`, `fr` and `lb`. The `events` list in the same file holds the dated events marked on the timeline, each told in a bubble when the timeline reaches its year. The Luxembourgish text has not yet been reviewed by a native speaker.
 
 ## Rebuilding the data
 

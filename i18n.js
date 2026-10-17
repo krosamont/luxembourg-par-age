@@ -22,7 +22,7 @@ window.I18N = {
         era: "era", before: "before",
         decimal: ".",
         landmarks: ["Grand Ducal Palace", "Cathedral", "Bock Casemates", "Neumünster Abbey", "Central Station", "Adolphe Bridge", "Philharmonie", "Fort Thüngen", "EU Court of Justice", "Glacis", "Hospital (CHL)", "Stade de Luxembourg"],
-        close: "Close",
+        close: "Close", buildingCity: "Building the city",
         readMore: "Read more", photoBy: "Photo", clickHint: "Click for photo and links", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "No photo on Wikimedia Commons yet",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> buildings (${p(s.documented)}) have a documented date (Wikidata, OpenStreetMap).`,
@@ -88,7 +88,7 @@ window.I18N = {
         era: "époque", before: "avant",
         decimal: ",",
         landmarks: ["Palais grand-ducal", "Cathédrale", "Casemates du Bock", "Abbaye de Neumünster", "Gare centrale", "Pont Adolphe", "Philharmonie", "Fort Thüngen", "Cour de justice de l'UE", "Glacis", "Centre hospitalier", "Stade de Luxembourg"],
-        close: "Fermer",
+        close: "Fermer", buildingCity: "Construction de la ville",
         readMore: "En savoir plus", photoBy: "Photo", clickHint: "Cliquez pour la photo et les liens", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "Pas encore de photo sur Wikimedia Commons",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> bâtiments (${p(s.documented)}) ont une date documentée (Wikidata, OpenStreetMap).`,
@@ -154,7 +154,7 @@ window.I18N = {
         era: "Epoch", before: "virun",
         decimal: ",",
         landmarks: ["Groussherzogleche Palais", "Kathedral", "Bock-Kasematten", "Abtei Neimënster", "Zentralgare", "Adolphe-Bréck", "Philharmonie", "Fort Thüngen", "EU-Geriichtshaff", "Glacis", "CHL", "Stade de Luxembourg"],
-        close: "Zoumaachen",
+        close: "Zoumaachen", buildingCity: "D'Stad gëtt gebaut",
         readMore: "Méi gewuer ginn", photoBy: "Foto", clickHint: "Klickt fir d'Foto an d'Linken", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "Nach keng Foto op Wikimedia Commons",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> Gebaier (${p(s.documented)}) hunn en dokumentéierten Datum (Wikidata, OpenStreetMap).`,
