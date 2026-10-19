@@ -21,7 +21,7 @@ then open http://127.0.0.1:8765/.
 | Missing from the ACT 2013 3D model, present in 2023 | 456 |
 | Estimated from the quarter's profile (`pipeline/priors.json`) | 20,136 |
 
-Estimates are drawn pale on the map and can be hidden. The method and its limits are detailed under “About the data” on the page.
+936 buildings have known occupants (ministries and state services, EU institutions, embassies, radio and press, banks, companies), shown in the “Use” colouring, the tooltip and the building card. Estimates are drawn pale on the map and can be hidden. The method and its limits are detailed under “About the data” on the page.
 
 ## Editing the story
 

@@ -22,7 +22,13 @@ window.I18N = {
         era: "era", before: "before",
         decimal: ".",
         landmarks: ["Grand Ducal Palace", "Cathedral", "Bock Casemates", "Neumünster Abbey", "Central Station", "Adolphe Bridge", "Philharmonie", "Fort Thüngen", "EU Court of Justice", "Glacis", "Hospital (CHL)", "Stade de Luxembourg"],
-        close: "Close", buildingCity: "Building the city",
+        close: "Close",
+        tlReign: "Reign", tlStill: (n, rec) => `<strong>${n}</strong> buildings from these years still stand, ${rec} of them with a recorded date.`,
+        tlYear: (n, y) => `${n} built in ${y}`, tlDecade: (n, y) => `${n} built in the ${y}s`, tlEvents: "In these years", tlClick: "Click to go to this year",
+        use: "Use", legendUse: "Who uses it",
+        uses: { gov: "Government & state", eu: "EU & international", embassy: "Embassies & consulates", media: "Radio, TV & press", finance: "Banks & finance", company: "Companies & hotels", public: "Schools, health & culture", none: "No known occupant" },
+        useNote: "Occupants from OpenStreetMap and Wikidata. Most buildings, homes above all, have none recorded.",
+        whoIsHere: "Who is here", more: (n) => `+${n} more`, website: "website", buildingCity: "Building the city",
         readMore: "Read more", photoBy: "Photo", clickHint: "Click for photo and links", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "No photo on Wikimedia Commons yet",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> buildings (${p(s.documented)}) have a documented date (Wikidata, OpenStreetMap).`,
@@ -59,7 +65,7 @@ window.I18N = {
 <ul>
 <li><a href="https://data.public.lu/fr/datasets/base-de-donnees-nationale-des-batiments-3d-2023/" target="_blank" rel="noopener">National 3D buildings database 2023</a> and <a href="https://data.public.lu/fr/datasets/batiments-3d-2013-lod-1-level-of-detail-1/" target="_blank" rel="noopener">2013 LOD1 model</a>, Administration du cadastre et de la topographie (ACT), via data.public.lu. CC0.</li>
 <li><a href="https://features.geoportail.lu/collections/2214" target="_blank" rel="noopener">Construction period of buildings</a>; <a href="https://features.geoportail.lu/collections/709/0" target="_blank" rel="noopener">national monuments and supplementary inventory</a>, via features.geoportail.lu.</li>
-<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) and <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL): dates, names, quarters, water and green areas.</li>
+<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) and <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> (ODbL): dates, names, quarters, water and green areas, and the occupants of buildings (ministries, EU institutions, embassies, radio and press, banks, companies).</li>
 <li>Photos: <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>, each credited with its author and licence.</li>
 <li>Code and data pipeline: <a href="https://github.com/krosamont/luxembourg-par-age" target="_blank" rel="noopener">GitHub</a>.</li>
 </ul>
@@ -88,7 +94,13 @@ window.I18N = {
         era: "époque", before: "avant",
         decimal: ",",
         landmarks: ["Palais grand-ducal", "Cathédrale", "Casemates du Bock", "Abbaye de Neumünster", "Gare centrale", "Pont Adolphe", "Philharmonie", "Fort Thüngen", "Cour de justice de l'UE", "Glacis", "Centre hospitalier", "Stade de Luxembourg"],
-        close: "Fermer", buildingCity: "Construction de la ville",
+        close: "Fermer",
+        tlReign: "Règne", tlStill: (n, rec) => `<strong>${n}</strong> bâtiments de ces années sont encore debout, dont ${rec} avec une date relevée.`,
+        tlYear: (n, y) => `${n} construits en ${y}`, tlDecade: (n, y) => `${n} construits dans les années ${y}`, tlEvents: "Pendant ces années", tlClick: "Cliquez pour aller à cette année",
+        use: "Usage", legendUse: "Qui l'occupe",
+        uses: { gov: "Gouvernement & État", eu: "UE & international", embassy: "Ambassades & consulats", media: "Radio, télé & presse", finance: "Banques & finance", company: "Entreprises & hôtels", public: "Écoles, santé & culture", none: "Occupant inconnu" },
+        useNote: "Occupants d'après OpenStreetMap et Wikidata. La plupart des bâtiments, surtout les logements, n'en ont aucun de recensé.",
+        whoIsHere: "Qui est ici", more: (n) => `+${n} autres`, website: "site web", buildingCity: "Construction de la ville",
         readMore: "En savoir plus", photoBy: "Photo", clickHint: "Cliquez pour la photo et les liens", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "Pas encore de photo sur Wikimedia Commons",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> bâtiments (${p(s.documented)}) ont une date documentée (Wikidata, OpenStreetMap).`,
@@ -125,7 +137,7 @@ window.I18N = {
 <ul>
 <li><a href="https://data.public.lu/fr/datasets/base-de-donnees-nationale-des-batiments-3d-2023/" target="_blank" rel="noopener">Base de données nationale des bâtiments 3D 2023</a> et <a href="https://data.public.lu/fr/datasets/batiments-3d-2013-lod-1-level-of-detail-1/" target="_blank" rel="noopener">modèle LOD1 2013</a>, Administration du cadastre et de la topographie (ACT), via data.public.lu. CC0.</li>
 <li><a href="https://features.geoportail.lu/collections/2214" target="_blank" rel="noopener">Période de construction des bâtiments</a> ; <a href="https://features.geoportail.lu/collections/709/0" target="_blank" rel="noopener">immeubles classés monument national et inscrits à l'inventaire supplémentaire</a>, via features.geoportail.lu.</li>
-<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) et <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a> (ODbL) : dates, noms, quartiers, eau et espaces verts.</li>
+<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) et <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a> (ODbL) : dates, noms, quartiers, eau et espaces verts, et les occupants des bâtiments (ministères, institutions européennes, ambassades, radios et presse, banques, entreprises).</li>
 <li>Photos : <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>, chacune créditée avec son auteur et sa licence.</li>
 <li>Code et chaîne de traitement : <a href="https://github.com/krosamont/luxembourg-par-age" target="_blank" rel="noopener">GitHub</a>.</li>
 </ul>
@@ -154,7 +166,13 @@ window.I18N = {
         era: "Epoch", before: "virun",
         decimal: ",",
         landmarks: ["Groussherzogleche Palais", "Kathedral", "Bock-Kasematten", "Abtei Neimënster", "Zentralgare", "Adolphe-Bréck", "Philharmonie", "Fort Thüngen", "EU-Geriichtshaff", "Glacis", "CHL", "Stade de Luxembourg"],
-        close: "Zoumaachen", buildingCity: "D'Stad gëtt gebaut",
+        close: "Zoumaachen",
+        tlReign: "Regentschaft", tlStill: (n, rec) => `<strong>${n}</strong> Gebaier aus dëse Joren stinn nach, dovun ${rec} mat engem opgeholl Datum.`,
+        tlYear: (n, y) => `${n} gebaut ${y}`, tlDecade: (n, y) => `${n} gebaut an den ${y}er Joren`, tlEvents: "An dëse Joren", tlClick: "Klickt fir op dëst Joer ze goen",
+        use: "Notzung", legendUse: "Wien ass do",
+        uses: { gov: "Regierung & Staat", eu: "EU & international", embassy: "Ambassaden & Konsulater", media: "Radio, Tëlee & Press", finance: "Banken & Finanzen", company: "Betriber & Hotellen", public: "Schoulen, Gesondheet & Kultur", none: "Keen bekannte Benotzer" },
+        useNote: "Benotzer no OpenStreetMap a Wikidata. Bei de meeschte Gebaier, virun allem Wunnengen, ass keen agedroen.",
+        whoIsHere: "Wien ass hei", more: (n) => `+${n} aner`, website: "Websäit", buildingCity: "D'Stad gëtt gebaut",
         readMore: "Méi gewuer ginn", photoBy: "Foto", clickHint: "Klickt fir d'Foto an d'Linken", wikidata: "Wikidata", osm: "OpenStreetMap", noPhoto: "Nach keng Foto op Wikimedia Commons",
         stats: (s, f, p) => [
             `<strong>${f(s.documented)}</strong> Gebaier (${p(s.documented)}) hunn en dokumentéierten Datum (Wikidata, OpenStreetMap).`,
@@ -191,7 +209,7 @@ window.I18N = {
 <ul>
 <li><a href="https://data.public.lu/fr/datasets/base-de-donnees-nationale-des-batiments-3d-2023/" target="_blank" rel="noopener">Nationaal Datebank vun de 3D-Gebaier 2023</a> an <a href="https://data.public.lu/fr/datasets/batiments-3d-2013-lod-1-level-of-detail-1/" target="_blank" rel="noopener">LOD1-Modell 2013</a>, Administration du cadastre et de la topographie (ACT), iwwer data.public.lu. CC0.</li>
 <li><a href="https://features.geoportail.lu/collections/2214" target="_blank" rel="noopener">Bauperiod vun de Gebaier</a>; <a href="https://features.geoportail.lu/collections/709/0" target="_blank" rel="noopener">Nationalmonumenter an zousätzlecht Inventar</a>, iwwer features.geoportail.lu.</li>
-<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) an <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mataarbechter</a> (ODbL): Datumen, Nimm, Quartieren, Waasser a Gréngflächen.</li>
+<li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) an <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mataarbechter</a> (ODbL): Datumen, Nimm, Quartieren, Waasser a Gréngflächen, an d'Benotzer vun de Gebaier (Ministèren, EU-Institutiounen, Ambassaden, Radio a Press, Banken, Betriber).</li>
 <li>Fotoen: <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>, all Foto mat sengem Auteur a senger Lizenz.</li>
 <li>Code an Donnéeën-Pipeline: <a href="https://github.com/krosamont/luxembourg-par-age" target="_blank" rel="noopener">GitHub</a>.</li>
 </ul>

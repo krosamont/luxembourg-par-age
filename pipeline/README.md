@@ -23,7 +23,10 @@ venv/bin/python 02_evidence.py work LOD1_par_commune/Luxembourg.gml
 venv/bin/python 03_context.py work
 venv/bin/python 04_build.py work ../data
 venv/bin/python 05_media.py ../data
+venv/bin/python 06_occupants.py work ../data
 ```
+
+`06_occupants.py` places the occupants of buildings (ministries and state services, EU institutions, embassies, radio, TV and press, banks, companies, schools and culture) from OpenStreetMap and Wikidata, and gives each building the use of its most significant occupant. The classification rules are regular expressions at the top of the script.
 
 `05_media.py` fetches the chapter photos and source links (topics in `story_topics.json`) and the photos of buildings dated from Wikidata, with each photo's author and licence from Wikimedia Commons.
 

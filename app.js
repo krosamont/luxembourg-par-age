@@ -19,6 +19,12 @@
     ];
     const HEIGHT_STOPS = [[0, [46, 58, 110]], [8, [52, 120, 176]], [16, [60, 186, 164]], [30, [190, 214, 84]], [60, [246, 160, 62]], [120, [236, 72, 96]]];
     const MUTE = [58, 60, 66];
+    const USES = ["gov", "eu", "embassy", "media", "finance", "company", "public"];
+    const USE_COLORS = {
+        gov: [232, 72, 78], eu: [74, 124, 242], embassy: [176, 112, 232], media: [242, 193, 78],
+        finance: [56, 196, 152], company: [150, 168, 190], public: [240, 142, 64],
+    };
+    const NO_USE = [46, 50, 58];
     // hand-placed; coordinates from Wikidata where it has them. Names are in i18n.js, same order.
     const LANDMARKS = [
         [6.13221, 49.61096, "end"], [6.13139, 49.60972, "end"], [6.13698, 49.61178], [6.13750, 49.60944],
@@ -27,7 +33,7 @@
     ].map((d, k) => ({ k, lon: d[0], lat: d[1], anchor: d[2] || "start" }));
 
     const $ = (id) => document.getElementById(id);
-    const state = { lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1, card: -1 };
+    const state = { useOnly: null, lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1, card: -1 };
     const T = () => I18N[state.lang];
     let D; // decoded data
     let deckgl;
@@ -59,11 +65,12 @@
     }
 
     async function load() {
-        const [meta, buf, ctx, media] = await Promise.all([
+        const [meta, buf, ctx, media, occJson] = await Promise.all([
             fetch("data/meta.json").then((r) => r.json()),
             fetch("data/buildings.bin").then((r) => r.arrayBuffer()),
             fetch("data/context.json").then((r) => r.json()),
             fetch("data/media.json").then((r) => r.json()),
+            fetch("data/occupants.json").then((r) => r.json()),
         ]);
         const Typed = { int16: Int16Array, uint16: Uint16Array, uint8: Uint8Array, uint32: Uint32Array };
         const a = {};
@@ -92,11 +99,17 @@
         // ids in order of year, to pick the buildings rising in a range of years
         const byYear = Int32Array.from(ids).sort((x, y) => a.year[x] - a.year[y]);
         const yearsSorted = Int16Array.from(byYear, (i) => a.year[i]);
-        D = { meta, ctx, media, n, polys, era, ...a, ids, byYear, yearsSorted };
+        const occ = new Array(n);
+        for (const k in occJson) occ[+k] = occJson[k];
+        D = { meta, ctx, media, occ, n, polys, era, ...a, ids, byYear, yearsSorted };
     }
 
     /* ---------- map ---------- */
     function buildingColor(i) {
+        if (state.mode === "use") {
+            const o = D.occ[i];
+            return o && (!state.useOnly || o.c === state.useOnly) ? USE_COLORS[o.c] : NO_USE;
+        }
         let c = state.mode === "period" ? ERAS[D.era[i]].color : lerpColor(HEIGHT_STOPS, D.height[i] / 10);
         if (state.mode === "period" && D.src[i] === 4) c = mix(c, MUTE, 0.55);
         return c;
@@ -177,7 +190,7 @@
             filterRange: [[state.lo, Math.min(state.hi, grow.yg)], [0, state.recordedOnly ? 3 : 4]],
             extensions: [new DataFilterExtension({ filterSize: 2 })],
             material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
-            updateTriggers: { getFillColor: [state.mode] },
+            updateTriggers: { getFillColor: [state.mode, state.useOnly] },
             onHover,
             onClick: (info) => openCard(info.index),
         }));
@@ -189,7 +202,7 @@
                 getElevation: (i) => (D.height[i] / 10) * riseOf(i),
                 getFillColor: (i) => mix(buildingColor(i), [255, 236, 190], 0.35 * (1 - riseOf(i))),
                 material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
-                updateTriggers: { getElevation: grow.frame, getFillColor: [grow.frame, state.mode] },
+                updateTriggers: { getElevation: grow.frame, getFillColor: [grow.frame, state.mode, state.useOnly] },
             }));
         }
         out.push(new TextLayer({
@@ -221,6 +234,52 @@
         placeHandles();
         updateRulers();
         updateEvents();
+    }
+
+    /* ---------- timeline tooltip: the reign, its buildings and events under the pointer ---------- */
+    let reignStats;
+    function computeReignStats() {
+        reignStats = RULERS.map((r) => {
+            const a = upperBound(D.yearsSorted, r.from - 1), b = upperBound(D.yearsSorted, r.to - 1 + (r.to >= MAX_YEAR ? 1 : 0));
+            let rec = 0;
+            for (let k = a; k < b; k++) if (D.src[D.byYear[k]] < 4) rec++;
+            return { n: b - a, rec };
+        });
+    }
+
+    function showTimelineTip(ev) {
+        if (ev.pointerType === "touch") return;
+        const t = T(), L = state.lang;
+        const r = $("track").getBoundingClientRect();
+        const x = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width));
+        const y = xToYear(x);
+        const k = RULERS.findIndex((q) => y >= q.from && y < q.to);
+        const tip = $("tl-tip");
+        const decade = y < SPLIT;
+        const y0 = decade ? Math.floor(y / 10) * 10 : y;
+        const nYear = upperBound(D.yearsSorted, decade ? y0 + 9 : y0) - upperBound(D.yearsSorted, y0 - 1);
+        let html = `<div class="tt-year">${decade ? y0 + "s" : y}<span>${decade ? t.tlDecade(fmt(nYear), y0) : t.tlYear(fmt(nYear), y0)}</span></div>`;
+        if (k >= 0) {
+            const q = RULERS[k], st = reignStats[k];
+            const evs = EVENTS.filter((e) => e.year >= q.from && e.year < q.to);
+            html += `<div class="tt-ruler">♛ ${escapeHtml(q.name[L])} <span>${t.tlReign} ${q.from}–${Math.min(q.to, MAX_YEAR)}</span></div>` +
+                `<p class="tt-bio">${escapeHtml(q.bio[L])}</p>` +
+                `<p class="tt-stat">${t.tlStill(fmt(st.n), fmt(st.rec))}</p>` +
+                (evs.length ? `<div class="tt-events"><b>${t.tlEvents}</b>${evs.map((e) => `<div><span>${e.year}</span>${escapeHtml(e.text[L])}</div>`).join("")}</div>` : "");
+        }
+        html += `<div class="tt-hint">${t.tlClick}</div>`;
+        tip.innerHTML = html;
+        tip.hidden = false;
+        const w = tip.offsetWidth, W = r.width;
+        tip.style.left = `${Math.min(W - w / 2, Math.max(w / 2, x * W))}px`;
+        // the guide line follows the pointer
+        $("tl-guide").style.left = `${x * 100}%`;
+        $("tl-guide").hidden = false;
+    }
+
+    function hideTimelineTip() {
+        $("tl-tip").hidden = true;
+        $("tl-guide").hidden = true;
     }
 
     /* ---------- dated events on the timeline ---------- */
@@ -279,7 +338,7 @@
         const tip = $("tooltip");
         const i = info.index;
         if (i == null || i < 0) { tip.hidden = true; return; }
-        tip.innerHTML = describe(i) + (D.meta.refs[i] ? `<div class="hint">${T().clickHint}</div>` : "");
+        tip.innerHTML = describe(i) + (D.meta.refs[i] || D.occ[i] ? `<div class="hint">${T().clickHint}</div>` : "");
         tip.hidden = false;
         const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
         let x = info.x + pad, yy = info.y + pad;
@@ -306,14 +365,38 @@
             (ruler ? `<div class="ruler">${escapeHtml(ruler.name[state.lang])}</div>` : "") +
             `<div class="src">${escapeHtml(srcLine)}</div>` +
             `<div>${(D.height[i] / 10).toFixed(1).replace(".", t.decimal)} m · ${escapeHtml(quarter)}</div>` +
-            (D.flags[i] & 1 ? `<span class="tag">${t.monument}</span>` : "");
+            (D.flags[i] & 1 ? `<span class="tag">${t.monument}</span>` : "") +
+            occupantsShort(i);
+    }
+
+    const useTag = (u) => `<span class="use-tag"><i style="background:rgb(${USE_COLORS[u]})"></i>${T().uses[u]}</span>`;
+
+    function occupantsShort(i) {
+        const o = D.occ[i];
+        if (!o) return "";
+        const names = o.o.slice(0, 3).map((x) => escapeHtml(x[0])).join(" · ");
+        return `<div class="occ">${useTag(o.c)}<div>${names}${o.n > 3 ? ` <span class="more">${T().more(o.n - 3)}</span>` : ""}</div></div>`;
+    }
+
+    function occupantsFull(i) {
+        const o = D.occ[i];
+        if (!o) return "";
+        const t = T();
+        const rows = o.o.map(([name, u, web, ref]) => {
+            const refUrl = /^Q\d+$/.test(ref) ? `https://www.wikidata.org/wiki/${ref}` : `https://www.openstreetmap.org/${ref}`;
+            const site = web ? ` · ${ext(web, t.website)}` : "";
+            return `<li><i style="background:rgb(${USE_COLORS[u]})"></i><span>${ext(refUrl, escapeHtml(name))}${site}<small>${t.uses[u]}</small></span></li>`;
+        }).join("");
+        const more = o.n > o.o.length ? `<p class="more">${t.more(o.n - o.o.length)}</p>` : "";
+        return `<h4>${t.whoIsHere}</h4><ul class="occ-list">${rows}</ul>${more}`;
     }
 
     // Wikidata label in the reader's language when the item has one
     function nameOf(i) {
         const item = D.media.items[D.meta.refs[i]];
         const l = item && item.label;
-        return (l && (l[state.lang] || l.en || l.fr || l.lb)) || D.meta.names[D.name[i]] || T().building;
+        const o = D.occ[i];
+        return (l && (l[state.lang] || l.en || l.fr || l.lb)) || D.meta.names[D.name[i]] || (o && o.o[0][0]) || T().building;
     }
 
     /* ---------- photos and links ---------- */
@@ -351,8 +434,9 @@
         }
         $("card-body").innerHTML =
             (item ? photoHtml(item.photo, name) || `<p class="no-photo">${t.noPhoto}</p>` : "") +
-            describe(i) +
-            (links.length ? `<p class="card-links">${links.join(" · ")}</p>` : "");
+            describe(i).replace(occupantsShort(i), "") +
+            (links.length ? `<p class="card-links">${links.join(" · ")}</p>` : "") +
+            occupantsFull(i);
         $("card").hidden = false;
         $("tooltip").hidden = true;
     }
@@ -378,10 +462,12 @@
                 : state.lo === MIN_YEAR ? t.builtUpTo(state.hi) : t.builtInRange;
         const r = rulerAt(state.hi);
         $("ruler-label").textContent = r ? r.name[state.lang] : "";
-        document.querySelectorAll("#legend-list li").forEach((li, k) => {
-            const e = ERAS[k];
-            li.classList.toggle("off", e.to < state.lo || e.from > state.hi);
-        });
+        if (state.mode === "period") {
+            document.querySelectorAll("#legend-list li").forEach((li, k) => {
+                const e = ERAS[k];
+                li.classList.toggle("off", e.to < state.lo || e.from > state.hi);
+            });
+        }
     }
 
     function buildLegend() {
@@ -389,6 +475,30 @@
         const list = $("legend-list");
         list.innerHTML = "";
         document.querySelector(".ramp-axis")?.remove();
+        document.querySelector(".legend-use-note")?.remove();
+        if (state.mode === "use") {
+            $("legend-title").textContent = t.legendUse;
+            $("ramp").style.display = "none";
+            document.querySelector(".legend-note").style.display = "none";
+            const counts = Object.fromEntries(USES.map((u) => [u, 0]));
+            let none = 0;
+            for (let i = 0; i < D.n; i++) if (D.occ[i]) counts[D.occ[i].c]++; else none++;
+            USES.forEach((u) => {
+                const li = document.createElement("li");
+                li.tabIndex = 0;
+                li.setAttribute("role", "button");
+                li.classList.toggle("off", !!state.useOnly && state.useOnly !== u);
+                li.title = t.showOnly(t.uses[u]);
+                li.innerHTML = `<span class="swatch" style="background:rgb(${USE_COLORS[u]})"></span><span>${t.uses[u]}</span><span class="n">${fmt(counts[u])}</span>`;
+                const pick = () => { state.useOnly = state.useOnly === u ? null : u; buildLegend(); render(); };
+                li.addEventListener("click", pick);
+                li.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); } });
+                list.appendChild(li);
+            });
+            list.insertAdjacentHTML("beforeend", `<li class="static"><span class="swatch" style="background:rgb(${NO_USE})"></span><span>${t.uses.none}</span><span class="n">${fmt(none)}</span></li>`);
+            list.insertAdjacentHTML("afterend", `<p class="legend-use-note">${t.useNote}</p>`);
+            return;
+        }
         if (state.mode === "height") {
             $("legend-title").textContent = t.legendHeight;
             $("ramp").style.display = "";
@@ -770,6 +880,9 @@
             followTimeline();
             render();
         });
+        $("track").addEventListener("pointermove", showTimelineTip);
+        $("track").addEventListener("pointerleave", hideTimelineTip);
+        $("track").addEventListener("pointerdown", hideTimelineTip);
         window.addEventListener("resize", () => { buildAxis(); buildRulers(); buildEvents(); drawHist(); updateRulers(); updateEvents(); renderStory(); });
     }
 
@@ -786,6 +899,7 @@
             parameters: { clearColor: [14 / 255, 17 / 255, 22 / 255, 1] },
         });
         computeHist();
+        computeReignStats();
         buildAxis();
         wire();
         setLang(state.lang);

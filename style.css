@@ -1017,3 +1017,198 @@ dialog .small {
         max-width: 92%;
     }
 }
+
+/* use mode and occupants */
+.use-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.use-tag i,
+.occ-list i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex: none;
+}
+
+.occ {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+}
+
+.occ .more,
+.card .more {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.card h4 {
+    margin: 12px 0 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.occ-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.occ-list li {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 3px 0;
+}
+
+.occ-list li small {
+    display: block;
+    color: var(--muted);
+    font-size: 10.5px;
+}
+
+.occ-list a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+}
+
+.occ-list a:hover {
+    border-bottom-color: var(--accent);
+}
+
+.legend li.static {
+    cursor: default;
+}
+
+.legend li.static:hover {
+    background: transparent;
+}
+
+.legend-use-note {
+    margin: 8px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.4;
+}
+
+/* timeline tooltip */
+.tl-tip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%);
+    width: 330px;
+    padding: 10px 12px;
+    background: rgba(10, 12, 16, 0.97);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.tl-tip[hidden],
+.tl-guide[hidden] {
+    display: none;
+}
+
+.tt-year {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.tt-year span {
+    margin-left: 8px;
+    font-family: "Barlow", sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.tt-ruler {
+    margin-top: 6px;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.tt-ruler span {
+    margin-left: 4px;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 11.5px;
+}
+
+.tt-bio {
+    margin: 3px 0 0;
+    color: #d3d8e0;
+}
+
+.tt-stat {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.tt-stat strong {
+    color: var(--text);
+}
+
+.tt-events {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+}
+
+.tt-events b {
+    display: block;
+    color: var(--muted);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.tt-events span {
+    display: inline-block;
+    min-width: 36px;
+    color: var(--accent);
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.tt-hint {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 10.5px;
+    font-style: italic;
+}
+
+.tl-guide {
+    position: absolute;
+    top: 0;
+    height: 86px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    z-index: 1;
+}
