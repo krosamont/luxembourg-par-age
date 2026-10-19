@@ -24,7 +24,9 @@
             <h1><span data-i18n="titleA">Luxembourg</span> <em data-i18n="titleB">by age</em></h1>
             <p id="count"></p>
         </div>
-        <nav class="controls" aria-label="Display">
+        <button type="button" class="plain menu-btn" id="menu-btn" aria-expanded="false" aria-controls="controls"><span
+                data-i18n="menu">Options</span></button>
+        <nav class="controls" id="controls" aria-label="Display">
             <div class="seg lang" role="group" aria-label="Language">
                 <button type="button" data-lang="en" lang="en">EN</button>
                 <button type="button" data-lang="fr" lang="fr">FR</button>
@@ -57,6 +59,7 @@
     <section class="story" id="story" aria-live="polite">
         <div class="story-head">
             <span id="story-step"></span>
+            <button type="button" class="story-more" id="story-more" aria-expanded="false"></button>
             <button type="button" class="close-story" id="close-story">×</button>
         </div>
         <figure class="story-photo" id="story-photo">

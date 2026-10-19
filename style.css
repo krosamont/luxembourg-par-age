@@ -1477,3 +1477,215 @@ body.story-on .view-tools {
         right: 16px;
     }
 }
+
+/* compact layout: phones, upright and sideways */
+.menu-btn,
+.story-more {
+    display: none;
+}
+
+@media (max-width: 760px), (max-height: 500px) {
+    .top {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        z-index: 5;
+    }
+
+    .brand {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .menu-btn {
+        display: inline-flex;
+        margin-left: auto;
+        min-height: 40px;
+    }
+
+    .menu-btn::before {
+        content: "☰";
+        font-size: 15px;
+    }
+
+    body.menu-open .menu-btn {
+        background: var(--text);
+        color: var(--bg);
+    }
+
+    .controls {
+        display: none;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        backdrop-filter: blur(6px);
+        max-height: calc(100vh - 90px);
+        overflow: auto;
+    }
+
+    body.menu-open .controls {
+        display: flex;
+    }
+
+    .seg button,
+    .toggle,
+    .plain {
+        min-height: 40px;
+    }
+
+    .view-tools {
+        top: 112px;
+        bottom: auto;
+        right: 16px;
+        flex-direction: row;
+    }
+
+    body.story-on .view-tools {
+        right: 16px;
+    }
+
+    /* the story shows its year, title and buttons; the rest on demand */
+    .story-head {
+        gap: 4px;
+    }
+
+    .story-more {
+        display: inline-block;
+        margin-left: auto;
+        border: 0;
+        background: transparent;
+        color: var(--accent);
+        font-size: 12.5px;
+        font-weight: 600;
+        padding: 10px 6px;
+        text-transform: none;
+        letter-spacing: 0;
+        font-family: inherit;
+    }
+
+    .close-story {
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    body:not(.story-full) .story-photo,
+    body:not(.story-full) .story-text,
+    body:not(.story-full) .story-links {
+        display: none;
+    }
+
+    .story-nav button {
+        min-height: 40px;
+    }
+}
+
+/* phone held sideways: little height, so panels go to the sides */
+@media (max-height: 500px) {
+    .top {
+        top: 10px;
+        left: 12px;
+        right: 12px;
+    }
+
+    .brand h1 {
+        font-size: 24px;
+    }
+
+    .brand p {
+        display: none;
+    }
+
+    .view-tools {
+        top: 58px;
+        right: 12px;
+    }
+
+    .view-tools button {
+        width: 36px;
+        height: 36px;
+    }
+
+    body.story-on .view-tools {
+        right: 344px;
+    }
+
+    .story,
+    .card {
+        top: 58px;
+        bottom: 148px;
+        left: auto;
+        right: 12px;
+        width: 320px;
+        max-height: none;
+    }
+
+    .legend {
+        top: 58px;
+        bottom: 148px;
+        left: 12px;
+        right: auto;
+        width: 230px;
+        max-height: none;
+        overflow: auto;
+        padding: 8px 10px;
+    }
+
+    body.story-on .legend {
+        display: none;
+    }
+
+    .legend li .n,
+    .legend li small,
+    .ramp,
+    .ramp-axis {
+        display: none;
+    }
+
+    .timeline {
+        padding-bottom: 6px;
+    }
+
+    .tl-head {
+        margin-bottom: 0;
+    }
+
+    .tl-year strong {
+        font-size: 24px;
+    }
+
+    #play {
+        width: 36px;
+        height: 36px;
+    }
+
+    .tl-note {
+        display: none;
+    }
+}
+
+/* fingers need bigger targets than a mouse */
+@media (pointer: coarse) {
+    .tl-event {
+        width: 24px;
+        margin-left: -12px;
+    }
+
+    .tl-event::before {
+        left: 11.5px;
+    }
+
+    .tl-event::after {
+        left: 9.5px;
+    }
+
+    .handle {
+        top: 72px;
+        width: 24px;
+        height: 24px;
+        margin-left: -12px;
+    }
+}

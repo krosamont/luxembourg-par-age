@@ -1090,6 +1090,7 @@
         $("h-lo").setAttribute("aria-label", t.startYear);
         $("h-hi").setAttribute("aria-label", t.endYear);
         $("close-story").setAttribute("aria-label", t.hideStory);
+        $("story-more").textContent = document.body.classList.contains("story-full") ? t.storyLess : t.storyMore;
         $("loading").textContent = t.loading;
         if (!D) return;
         $("about-body").innerHTML = t.aboutHtml;
@@ -1136,8 +1137,23 @@
         $("spin").addEventListener("click", spin);
         $("tilt").addEventListener("click", () => setView({ pitch: view.pitch > 30 ? 0 : 55 }, 600));
         $("close-story").addEventListener("click", () => setStory(false));
+        // on a phone the menu and the story's photo and text fold away
+        $("menu-btn").addEventListener("click", () => {
+            const open = document.body.classList.toggle("menu-open");
+            $("menu-btn").setAttribute("aria-expanded", open);
+        });
+        $("story-more").addEventListener("click", () => {
+            const full = document.body.classList.toggle("story-full");
+            $("story-more").setAttribute("aria-expanded", full);
+            $("story-more").textContent = full ? T().storyLess : T().storyMore;
+        });
         $("close-card").addEventListener("click", closeCard);
-        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCard(); });
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            closeCard();
+            document.body.classList.remove("menu-open");
+            $("menu-btn").setAttribute("aria-expanded", false);
+        });
         $("story-prev").addEventListener("click", () => goToChapter(Math.max(-1, state.chapter - 1)));
         $("story-next").addEventListener("click", () => goToChapter(state.chapter >= CHAPTERS.length - 1 ? -1 : state.chapter + 1));
         $("open-about").addEventListener("click", () => $("about").showModal());
