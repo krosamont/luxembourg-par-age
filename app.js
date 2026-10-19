@@ -466,9 +466,56 @@
         bub.style.left = `${Math.min(W - w / 2, Math.max(w / 2, yearToX(e.year) * W))}px`;
     }
 
-    function flyTo(view) {
+    /* ---------- rotation: buttons, compass, 360° spin ---------- */
+    let view = { ...INTRO.view };
+    let spinRaf = 0;
+    const SPIN_S = 40; // seconds for a full turn
+
+    function setView(v, duration = 0) {
+        view = { ...view, ...v };
+        deckgl.setProps({ initialViewState: { ...view, maxPitch: 75, transitionDuration: duration } });
+        updateCompass();
+    }
+
+    function rotateBy(deg) {
+        stopSpin();
+        setView({ bearing: view.bearing + deg }, 500);
+    }
+
+    function updateCompass() {
+        const n = $("compass-needle");
+        if (n) n.style.transform = `rotate(${-view.bearing}deg)`;
+    }
+
+    function spin() {
+        if (spinRaf) return stopSpin();
+        $("spin").classList.add("on");
+        $("spin").setAttribute("aria-pressed", "true");
+        let last = performance.now();
+        const step = (t) => {
+            const deg = ((t - last) / 1000) * (360 / SPIN_S);
+            last = t;
+            setView({ bearing: (view.bearing + deg) % 360 });
+            spinRaf = requestAnimationFrame(step);
+        };
+        spinRaf = requestAnimationFrame(step);
+    }
+
+    function stopSpin() {
+        if (!spinRaf) return;
+        cancelAnimationFrame(spinRaf);
+        spinRaf = 0;
+        $("spin").classList.remove("on");
+        $("spin").setAttribute("aria-pressed", "false");
+    }
+
+    function flyTo(v) {
+        stopSpin();
+        view = { ...view, ...v };
+        updateCompass();
+        const view_ = v;
         deckgl.setProps({
-            initialViewState: { ...view, maxPitch: 75, transitionDuration: 2200, transitionInterpolator: new FlyToInterpolator({ speed: 1.6 }) },
+            initialViewState: { ...view_, maxPitch: 75, transitionDuration: 2200, transitionInterpolator: new FlyToInterpolator({ speed: 1.6 }) },
         });
     }
 
@@ -1037,6 +1084,7 @@
         document.documentElement.lang = l;
         document.title = t.pageTitle;
         document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t[el.dataset.i18n]; });
+        document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t[el.dataset.i18nTitle]; el.setAttribute("aria-label", el.title); });
         document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
         $("play").setAttribute("aria-label", state.playing ? t.pause : t.play);
         $("h-lo").setAttribute("aria-label", t.startYear);
@@ -1082,6 +1130,11 @@
         toggle("t-recorded", "recordedOnly");
         $("t-story").addEventListener("click", () => setStory(!state.story));
         $("t-split").addEventListener("click", toggleSplit);
+        $("rot-left").addEventListener("click", () => rotateBy(-45));
+        $("rot-right").addEventListener("click", () => rotateBy(45));
+        $("compass").addEventListener("click", () => { stopSpin(); setView({ bearing: 0 }, 600); });
+        $("spin").addEventListener("click", spin);
+        $("tilt").addEventListener("click", () => setView({ pitch: view.pitch > 30 ? 0 : 55 }, 600));
         $("close-story").addEventListener("click", () => setStory(false));
         $("close-card").addEventListener("click", closeCard);
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCard(); });
@@ -1115,7 +1168,9 @@
             parent: $("map"),
             views: new MapView({ repeat: false }),
             initialViewState: { ...INTRO.view, maxPitch: 75 },
-            controller: true,
+            controller: { dragRotate: true, touchRotate: true, keyboard: true, inertia: 300 },
+            onViewStateChange: ({ viewState }) => { view = viewState; updateCompass(); },
+            onInteractionStateChange: (s) => { if (s.isDragging || s.isRotating || s.isZooming) stopSpin(); },
             layers: [],
             getCursor: ({ isHovering }) => (isHovering ? "pointer" : "grab"),
             parameters: { clearColor: [14 / 255, 17 / 255, 22 / 255, 1] },

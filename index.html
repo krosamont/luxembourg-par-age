@@ -74,6 +74,18 @@
         </div>
     </section>
 
+    <div class="view-tools" role="group" aria-label="View">
+        <button type="button" id="rot-left" data-i18n-title="rotLeft">↺</button>
+        <button type="button" id="compass" data-i18n-title="north"><svg viewBox="0 0 24 24" id="compass-needle"
+                aria-hidden="true">
+                <path d="M12 2l4 10h-8z" fill="#e8484e" />
+                <path d="M12 22l-4-10h8z" fill="#9099a8" />
+            </svg></button>
+        <button type="button" id="rot-right" data-i18n-title="rotRight">↻</button>
+        <button type="button" id="spin" aria-pressed="false" data-i18n-title="spin">360°</button>
+        <button type="button" id="tilt" data-i18n-title="tilt">2D/3D</button>
+    </div>
+
     <div class="tooltip" id="tooltip" hidden></div>
 
     <section class="card" id="card" hidden aria-live="polite">
