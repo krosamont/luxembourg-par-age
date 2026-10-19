@@ -2,7 +2,9 @@
 
 All 23,373 buildings of the commune of Luxembourg in 3D, extruded to their measured height and coloured by the year they were built, with the story of the city and of the rulers who held it, from Count Siegfried's castle in 963 to Grand Duke Guillaume in 2025. In English, French and Luxembourgish (`?lang=en|fr|lb`). Inspired by *Central London by Age* (plotbrief) and *LAYRS: Amsterdam*.
 
-Live: https://krosamont.github.io/luxembourg-par-age/
+Live: https://data-workers.com/projet/luxembourg_evolution/ (also https://krosamont.github.io/luxembourg-par-age/)
+
+Every push to `main` is deployed to data-workers.com by `.github/workflows/deploy.yml` (FTPS, with an FTP account limited to the project folder).
 
 A static page: `index.html`, `app.js`, `style.css`, `story.js` (chapters and rulers), `i18n.js` (interface text) and `data/` (1.5 MB). To view it locally:
 
