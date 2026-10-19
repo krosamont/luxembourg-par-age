@@ -2,7 +2,7 @@
    with the story of the city (story.js) and three languages (i18n.js). */
 (() => {
     const { Deck, MapView, SolidPolygonLayer, PathLayer, TextLayer, ScatterplotLayer, COORDINATE_SYSTEM, DataFilterExtension, FlyToInterpolator } = deck;
-    const { rulers: RULERS, chapters: CHAPTERS, intro: INTRO, events: EVENTS } = window.STORY;
+    const { rulers: RULERS, chapters: CHAPTERS, intro: INTRO, events: EVENTS, quarters: QUARTER_TEXT } = window.STORY;
     const I18N = window.I18N;
 
     const MIN_YEAR = 960; // Siegfried's castle, 963
@@ -33,7 +33,7 @@
     ].map((d, k) => ({ k, lon: d[0], lat: d[1], anchor: d[2] || "start" }));
 
     const $ = (id) => document.getElementById(id);
-    const state = { useOnly: null, lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1, card: -1 };
+    const state = { split: false, splitT: 0, useOnly: null, lang: "en", mode: "period", story: true, context: true, recordedOnly: false, lo: MIN_YEAR, hi: MAX_YEAR, playing: false, chapter: -1, card: -1 };
     const T = () => I18N[state.lang];
     let D; // decoded data
     let deckgl;
@@ -65,12 +65,13 @@
     }
 
     async function load() {
-        const [meta, buf, ctx, media, occJson] = await Promise.all([
+        const [meta, buf, ctx, media, occJson, lmJson] = await Promise.all([
             fetch("data/meta.json").then((r) => r.json()),
             fetch("data/buildings.bin").then((r) => r.arrayBuffer()),
             fetch("data/context.json").then((r) => r.json()),
             fetch("data/media.json").then((r) => r.json()),
             fetch("data/occupants.json").then((r) => r.json()),
+            fetch("data/landmarks.json").then((r) => r.json()),
         ]);
         const Typed = { int16: Int16Array, uint16: Uint16Array, uint8: Uint8Array, uint32: Uint32Array };
         const a = {};
@@ -101,11 +102,43 @@
         const yearsSorted = Int16Array.from(byYear, (i) => a.year[i]);
         const occ = new Array(n);
         for (const k in occJson) occ[+k] = occJson[k];
-        D = { meta, ctx, media, occ, n, polys, era, ...a, ids, byYear, yearsSorted };
+        const landmarks = new Array(n), lmIds = [];
+        for (const k in lmJson) { landmarks[+k] = lmJson[k]; lmIds.push(+k); }
+        // a gold marker floats above each landmark building
+        const lmMarkers = lmIds.map((i) => {
+            const p = polys[i];
+            let x = 0, y = 0;
+            for (let k = 0; k < p.length; k += 2) { x += p[k]; y += p[k + 1]; }
+            return { i, position: [x / (p.length / 2), y / (p.length / 2), a.height[i] / 10 + 6] };
+        });
+        // quarters: their buildings, centre, and how far each moves out when the city is split
+        const nq = meta.quartiers.length;
+        const qIds = Array.from({ length: nq }, () => []);
+        const qSum = Array.from({ length: nq }, () => [0, 0]);
+        for (let i = 0; i < n; i++) {
+            const q = a.quartier[i], p = polys[i];
+            qIds[q].push(i);
+            qSum[q][0] += p[0];
+            qSum[q][1] += p[1];
+        }
+        const qCentre = qSum.map((s, q) => [s[0] / qIds[q].length, s[1] / qIds[q].length]);
+        const cx = qCentre.reduce((t, c) => t + c[0], 0) / nq, cy = qCentre.reduce((t, c) => t + c[1], 0) / nq;
+        const qOffset = qCentre.map(([x, y]) => [(x - cx) * 0.45, (y - cy) * 0.45]);
+        const qByName = Object.fromEntries(meta.quartiers.map((name, q) => [name, q]));
+        D = { meta, ctx, media, occ, landmarks, lmMarkers, n, polys, era, ...a, ids, byYear, yearsSorted, qIds, qCentre, qOffset, qByName };
     }
 
     /* ---------- map ---------- */
     function buildingColor(i) {
+        const hb = state.hoverBar;
+        if (hb) {
+            const y = D.year[i];
+            return y >= hb[0] && y <= hb[1] ? [255, 244, 214] : mix(baseColor(i), [14, 17, 22], 0.6);
+        }
+        return baseColor(i);
+    }
+
+    function baseColor(i) {
         if (state.mode === "use") {
             const o = D.occ[i];
             return o && (!state.useOnly || o.c === state.useOnly) ? USE_COLORS[o.c] : NO_USE;
@@ -171,15 +204,43 @@
     function layers() {
         const common = { coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS, coordinateOrigin: D.meta.origin };
         const out = [];
-        if (state.context) {
+        const split = state.splitT > 0;
+        const shift = (q) => [D.qOffset[q][0] * state.splitT, D.qOffset[q][1] * state.splitT];
+        if (state.context && !split) {
             out.push(new SolidPolygonLayer({ id: "green", ...common, data: D.ctx.greenRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: [26, 46, 34] }));
             out.push(new SolidPolygonLayer({ id: "water", ...common, data: D.ctx.waterRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: [32, 70, 112] }));
         }
         out.push(new PathLayer({
             id: "quartiers", ...common, data: D.ctx.quartiers, positionFormat: "XY",
-            getPath: (d) => d.path, getColor: [255, 255, 255, 34], getWidth: 1, widthUnits: "pixels",
+            getPath: (d) => {
+                if (!split) return d.path;
+                const [dx, dy] = shift(D.qByName[d.name] ?? 0);
+                return d.path.map((v, k) => v + (k % 2 ? dy : dx));
+            },
+            getColor: split ? [242, 193, 78, 140] : [255, 255, 255, 34], getWidth: split ? 1.5 : 1, widthUnits: "pixels",
+            updateTriggers: { getPath: state.splitT },
         }));
-        out.push(new SolidPolygonLayer({
+        const buildingProps = {
+            ...common, positionFormat: "XY",
+            extruded: true, wireframe: false, pickable: true, autoHighlight: true,
+            highlightColor: [255, 255, 255, 200],
+            getPolygon: (i) => D.polys[i],
+            getElevation: (i) => D.height[i] / 10,
+            getFillColor: buildingColor,
+            getFilterValue: (i) => [D.year[i], D.src[i]],
+            filterRange: [[state.lo, state.hi], [0, state.recordedOnly ? 3 : 4]],
+            extensions: [new DataFilterExtension({ filterSize: 2 })],
+            material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
+            updateTriggers: { getFillColor: [state.mode, state.useOnly, String(state.hoverBar)] },
+            onHover,
+            onClick: (info) => openCard(info.object),
+        };
+        if (split) {
+            D.qIds.forEach((ids, q) => {
+                const [dx, dy] = shift(q);
+                out.push(new SolidPolygonLayer({ id: `bq-${q}`, data: ids, ...buildingProps, modelMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1] }));
+            });
+        } else out.push(new SolidPolygonLayer({
             id: "buildings", ...common, data: D.ids, positionFormat: "XY",
             extruded: true, wireframe: false, pickable: true, autoHighlight: true,
             highlightColor: [255, 255, 255, 200],
@@ -190,11 +251,11 @@
             filterRange: [[state.lo, Math.min(state.hi, grow.yg)], [0, state.recordedOnly ? 3 : 4]],
             extensions: [new DataFilterExtension({ filterSize: 2 })],
             material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
-            updateTriggers: { getFillColor: [state.mode, state.useOnly] },
+            updateTriggers: { getFillColor: [state.mode, state.useOnly, String(state.hoverBar)] },
             onHover,
-            onClick: (info) => openCard(info.index),
+            onClick: (info) => openCard(info.object),
         }));
-        if (grow.yg < state.hi) {
+        if (grow.yg < state.hi && !split) {
             out.push(new SolidPolygonLayer({
                 id: "buildings-rising", ...common, data: risingIds(), positionFormat: "XY",
                 extruded: true, wireframe: false,
@@ -202,20 +263,45 @@
                 getElevation: (i) => (D.height[i] / 10) * riseOf(i),
                 getFillColor: (i) => mix(buildingColor(i), [255, 236, 190], 0.35 * (1 - riseOf(i))),
                 material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
-                updateTriggers: { getElevation: grow.frame, getFillColor: [grow.frame, state.mode, state.useOnly] },
+                updateTriggers: { getElevation: grow.frame, getFillColor: [grow.frame, state.mode, state.useOnly, String(state.hoverBar)] },
             }));
         }
-        out.push(new TextLayer({
+        out.push(new ScatterplotLayer({
+            id: "landmark-markers", ...common, data: D.lmMarkers.filter((m) => D.year[m.i] >= state.lo && D.year[m.i] <= state.hi),
+            getPosition: (m) => {
+                if (!split) return m.position;
+                const [dx, dy] = shift(D.quartier[m.i]);
+                return [m.position[0] + dx, m.position[1] + dy, m.position[2]];
+            },
+            updateTriggers: { getPosition: state.splitT },
+            getRadius: 5, radiusUnits: "pixels", stroked: true, lineWidthUnits: "pixels",
+            getLineWidth: 2, getLineColor: [14, 17, 22], getFillColor: [242, 193, 78], pickable: true,
+            onHover: (info) => onHover({ ...info, object: info.object ? info.object.i : null }),
+            onClick: (info) => info.object && openCard(info.object.i),
+            parameters: { depthCompare: "always" },
+        }));
+        if (split) {
+            out.push(new TextLayer({
+                id: "quarter-labels", ...common, data: D.meta.quartiers.map((name, q) => ({ name, q })),
+                getPosition: ({ q }) => { const [dx, dy] = shift(q); return [D.qCentre[q][0] + dx, D.qCentre[q][1] + dy, 60]; },
+                getText: ({ name, q }) => `${name.toUpperCase()}\n${fmt(D.qIds[q].length)}`,
+                getSize: 13, getColor: [255, 255, 255, 235], fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700,
+                characterSet: "auto", lineHeight: 1.1, outlineWidth: 4, outlineColor: [14, 17, 22, 230], fontSettings: { sdf: true },
+                background: false, pickable: true, onClick: (info) => info.object && openQuarter(info.object.q),
+                updateTriggers: { getPosition: state.splitT, getText: state.lang },
+                parameters: { depthCompare: "always" },
+            }));
+        } else out.push(new TextLayer({
             id: "quartier-names", ...common, data: D.ctx.quartiers,
             getPosition: (d) => d.centre, getText: (d) => d.name.toUpperCase(),
             getSize: 10.5, getColor: [200, 205, 215, 120], fontFamily: "Barlow Condensed, sans-serif",
             fontWeight: 600, characterSet: "auto", parameters: { depthCompare: "always" },
         }));
-        out.push(new ScatterplotLayer({
+        if (!split) out.push(new ScatterplotLayer({
             id: "landmark-dots", data: LANDMARKS, getPosition: (d) => [d.lon, d.lat, 0],
             getRadius: 3, radiusUnits: "pixels", getFillColor: [255, 255, 255], parameters: { depthCompare: "always" },
         }));
-        out.push(new TextLayer({
+        if (!split) out.push(new TextLayer({
             id: "landmarks", data: LANDMARKS, getPosition: (d) => [d.lon, d.lat, 0], getText: (d) => T().landmarks[d.k],
             getSize: 12.5, getColor: [255, 255, 255], getTextAnchor: (d) => d.anchor, getPixelOffset: (d) => [d.anchor === "end" ? -7 : 7, 0],
             fontFamily: "Barlow, sans-serif", fontWeight: 600, characterSet: "auto",
@@ -247,32 +333,79 @@
         });
     }
 
+    // the histogram bar under the pointer: one year from 1800, one decade before
+    function barAt(x) {
+        const y = xToYear(x);
+        return y < SPLIT ? [Math.floor(y / 10) * 10, Math.floor(y / 10) * 10 + 9] : [y, y];
+    }
+
+    function barDetails([y0, y1]) {
+        const t = T(), b = t.bar;
+        const ids = Array.from(D.byYear.subarray(upperBound(D.yearsSorted, y0 - 1), upperBound(D.yearsSorted, y1)));
+        const rec = ids.filter((i) => D.src[i] < 4);
+        let html = `<div class="tt-bar"><div class="tt-counts"><span><b>${fmt(rec.length)}</b> ${b.dated}</span>` +
+            `<span class="est"><b>${fmt(ids.length - rec.length)}</b> ${b.estimated}</span></div>`;
+        const evs = EVENTS.filter((e) => e.year >= y0 && e.year <= y1);
+        if (evs.length) html += `<div class="tt-that"><b>${b.thatYear}</b> ${evs.map((e) => escapeHtml(e.text[state.lang])).join(" · ")}</div>`;
+        // named buildings first: documented, then those with known occupants or a name
+        const named = ids.filter((i) => D.meta.names[D.name[i]] || D.occ[i] || D.media.items[D.meta.refs[i]])
+            .sort((p, q) => (D.src[p] - D.src[q]) || (D.height[q] - D.height[p]));
+        if (named.length) {
+            const withPhoto = named.find((i) => (D.media.items[D.meta.refs[i]] || {}).photo);
+            const photo = withPhoto != null ? D.media.items[D.meta.refs[withPhoto]].photo : null;
+            html += `<div class="tt-notable">${photo ? `<img src="${escapeHtml(photo.thumb)}" alt="">` : ""}<div><b>${b.notable}</b>` +
+                named.slice(0, 4).map((i) => {
+                    const o = D.occ[i];
+                    const when = D.src[i] <= 1 ? D.year[i] : D.src[i] === 4 ? `${t.about_} ${D.year[i]}` : `${D.lo[i]}–${D.hi[i]}`;
+                    return `<div>${o ? `<i style="background:rgb(${USE_COLORS[o.c]})"></i>` : ""}${escapeHtml(nameOf(i))} <span>${when}</span></div>`;
+                }).join("") + (named.length > 4 ? `<div class="more">${t.more(named.length - 4)}</div>` : "") + `</div></div>`;
+        }
+        if (ids.length) {
+            const byQ = {};
+            ids.forEach((i) => { byQ[D.quartier[i]] = (byQ[D.quartier[i]] || 0) + 1; });
+            const top = Object.entries(byQ).sort((p, q) => q[1] - p[1]).slice(0, 3)
+                .map(([q, n]) => `${escapeHtml(D.meta.quartiers[q])} <span>${fmt(n)}</span>`).join(" · ");
+            const tall = ids.reduce((m, i) => (D.height[i] > D.height[m] ? i : m), ids[0]);
+            html += `<div class="tt-where"><b>${b.where}</b> ${top}</div>` +
+                `<div class="tt-where"><b>${b.tallest}</b> ${(D.height[tall] / 10).toFixed(1).replace(".", t.decimal)} m · ${escapeHtml(nameOf(tall) === t.building ? D.meta.quartiers[D.quartier[tall]] : nameOf(tall))}</div>`;
+            if (ids.length - rec.length > rec.length) html += `<p class="tt-spread">${b.spread}</p>`;
+        }
+        return html + `</div>`;
+    }
+
+    let hoverKey = "";
     function showTimelineTip(ev) {
         if (ev.pointerType === "touch") return;
         const t = T(), L = state.lang;
         const r = $("track").getBoundingClientRect();
         const x = Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width));
-        const y = xToYear(x);
-        const k = RULERS.findIndex((q) => y >= q.from && y < q.to);
+        const bar = barAt(x), [y0, y1] = bar;
+        const k = RULERS.findIndex((q) => y0 >= q.from && y0 < q.to);
+        const n = upperBound(D.yearsSorted, y1) - upperBound(D.yearsSorted, y0 - 1);
         const tip = $("tl-tip");
-        const decade = y < SPLIT;
-        const y0 = decade ? Math.floor(y / 10) * 10 : y;
-        const nYear = upperBound(D.yearsSorted, decade ? y0 + 9 : y0) - upperBound(D.yearsSorted, y0 - 1);
-        let html = `<div class="tt-year">${decade ? y0 + "s" : y}<span>${decade ? t.tlDecade(fmt(nYear), y0) : t.tlYear(fmt(nYear), y0)}</span></div>`;
+        let html = `<div class="tt-year">${y0 === y1 ? y0 : y0 + "s"}<span>${y0 === y1 ? t.tlYear(fmt(n), y0) : t.tlDecade(fmt(n), y0)} · ${t.eras[eraOf(y0)][0]}</span></div>` +
+            barDetails(bar);
         if (k >= 0) {
             const q = RULERS[k], st = reignStats[k];
-            const evs = EVENTS.filter((e) => e.year >= q.from && e.year < q.to);
+            const evs = EVENTS.filter((e) => e.year >= q.from && e.year < q.to && (e.year < y0 || e.year > y1))
+                .sort((p, s2) => Math.abs(p.year - y0) - Math.abs(s2.year - y0)).slice(0, 3).sort((p, s2) => p.year - s2.year);
             html += `<div class="tt-ruler">♛ ${escapeHtml(q.name[L])} <span>${t.tlReign} ${q.from}–${Math.min(q.to, MAX_YEAR)}</span></div>` +
                 `<p class="tt-bio">${escapeHtml(q.bio[L])}</p>` +
                 `<p class="tt-stat">${t.tlStill(fmt(st.n), fmt(st.rec))}</p>` +
                 (evs.length ? `<div class="tt-events"><b>${t.tlEvents}</b>${evs.map((e) => `<div><span>${e.year}</span>${escapeHtml(e.text[L])}</div>`).join("")}</div>` : "");
         }
         html += `<div class="tt-hint">${t.tlClick}</div>`;
-        tip.innerHTML = html;
+        const key = `${y0}|${L}`;
+        if (key !== hoverKey) {
+            hoverKey = key;
+            tip.innerHTML = html;
+            state.hoverBar = bar; // light up this bar's buildings on the map and in the histogram
+            deckgl.setProps({ layers: layers() });
+            drawHist();
+        }
         tip.hidden = false;
         const w = tip.offsetWidth, W = r.width;
         tip.style.left = `${Math.min(W - w / 2, Math.max(w / 2, x * W))}px`;
-        // the guide line follows the pointer
         $("tl-guide").style.left = `${x * 100}%`;
         $("tl-guide").hidden = false;
     }
@@ -280,6 +413,12 @@
     function hideTimelineTip() {
         $("tl-tip").hidden = true;
         $("tl-guide").hidden = true;
+        if (state.hoverBar) {
+            state.hoverBar = null;
+            hoverKey = "";
+            deckgl.setProps({ layers: layers() });
+            drawHist();
+        }
     }
 
     /* ---------- dated events on the timeline ---------- */
@@ -336,9 +475,10 @@
     /* ---------- hover ---------- */
     function onHover(info) {
         const tip = $("tooltip");
-        const i = info.index;
+        const i = info.object ?? -1;
         if (i == null || i < 0) { tip.hidden = true; return; }
-        tip.innerHTML = describe(i) + (D.meta.refs[i] || D.occ[i] ? `<div class="hint">${T().clickHint}</div>` : "");
+        tip.innerHTML = describe(i) + (D.landmarks[i] ? `<div class="hint story-hint">★ ${T().storyHint}</div>`
+            : D.meta.refs[i] || D.occ[i] ? `<div class="hint">${T().clickHint}</div>` : "");
         tip.hidden = false;
         const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
         let x = info.x + pad, yy = info.y + pad;
@@ -393,6 +533,8 @@
 
     // Wikidata label in the reader's language when the item has one
     function nameOf(i) {
+        const lm = D.landmarks[i];
+        if (lm) return lm.title[state.lang] || lm.title.en;
         const item = D.media.items[D.meta.refs[i]];
         const l = item && item.label;
         const o = D.occ[i];
@@ -406,7 +548,7 @@
         if (!p) return "";
         const lic = p.licenceUrl ? ext(p.licenceUrl, escapeHtml(p.licence)) : escapeHtml(p.licence);
         return `<figure class="card-photo"><img src="${escapeHtml(p.thumb)}" alt="${escapeHtml(alt)}" loading="lazy">` +
-            `<figcaption>${T().photoBy}: ${ext(p.page, escapeHtml(p.artist))} · ${lic} · Wikimedia Commons</figcaption></figure>`;
+            `<figcaption>${p.area ? `<em>${T().areaPhoto}</em> · ` : ""}${T().photoBy}: ${ext(p.page, escapeHtml(p.artist))} · ${lic} · Wikimedia Commons</figcaption></figure>`;
     }
 
     // the Wikipedia article in the reader's language, else the first that exists, marked with its language
@@ -420,6 +562,7 @@
 
     function openCard(i) {
         if (i == null || i < 0) return;
+        state.quarterCard = -1;
         state.card = i;
         const t = T(), ref = D.meta.refs[i] || "";
         const item = ref.startsWith("Q") ? D.media.items[ref] : null;
@@ -432,16 +575,88 @@
         } else if (ref) {
             links.push(ext(`https://www.openstreetmap.org/${ref}`, t.osm));
         }
+        const lm = D.landmarks[i], o = D.occ[i];
+        if (lm) {
+            const L = state.lang;
+            for (const l of [L, "en", "fr", "lb"]) {
+                if (lm.links[l]) { links.unshift(ext(lm.links[l].url, escapeHtml(lm.links[l].title)) + (l !== L ? ` <span class="lang-tag">${l.toUpperCase()}</span>` : "")); break; }
+            }
+        }
+        const photo = lm && lm.photo ? photoHtml(lm.photo, name)
+            : item && item.photo ? photoHtml(item.photo, name)
+            : o && o.p ? photoHtml(o.p, name)
+            : item ? `<p class="no-photo">${t.noPhoto}</p>` : "";
         $("card-body").innerHTML =
-            (item ? photoHtml(item.photo, name) || `<p class="no-photo">${t.noPhoto}</p>` : "") +
+            photo +
             describe(i).replace(occupantsShort(i), "") +
-            (links.length ? `<p class="card-links">${links.join(" · ")}</p>` : "") +
+            (lm ? `<p class="card-story">${escapeHtml(lm.story[state.lang] || lm.story.en)}</p>` : "") +
+            (links.length ? `<p class="card-links">${[...new Set(links)].join(" · ")}</p>` : "") +
             occupantsFull(i);
         $("card").hidden = false;
         $("tooltip").hidden = true;
     }
 
+    function openQuarter(q) {
+        const t = T(), L = state.lang, qt = t.quarter, ids = D.qIds[q];
+        const name = D.meta.quartiers[q];
+        state.card = -1;
+        state.quarterCard = q;
+        const rec = ids.filter((i) => D.src[i] < 4).length;
+        const years = ids.map((i) => D.year[i]).sort((x, y) => x - y);
+        const eras = ERAS.map(() => 0);
+        ids.forEach((i) => eras[D.era[i]]++);
+        const bar = eras.map((c, k) => c ? `<i style="flex:${c};background:rgb(${ERAS[k].color})" title="${t.eras[k][0]} ${fmt(c)}"></i>` : "").join("");
+        const uses = {};
+        ids.forEach((i) => { if (D.occ[i]) uses[D.occ[i].c] = (uses[D.occ[i].c] || 0) + 1; });
+        const useHtml = Object.entries(uses).sort((x, y) => y[1] - x[1])
+            .map(([u, c]) => `<span><i style="background:rgb(${USE_COLORS[u]})"></i>${t.uses[u]} ${fmt(c)}</span>`).join("");
+        const lms = ids.filter((i) => D.landmarks[i]);
+        $("card-body").innerHTML =
+            `<b class="q-name">${escapeHtml(name)}</b>` +
+            `<p class="card-story">${escapeHtml((QUARTER_TEXT[name] || {})[L] || "")}</p>` +
+            `<p class="q-stats"><strong>${fmt(ids.length)}</strong> ${qt.buildings} · ${fmt(rec)} ${qt.dated} · ${qt.median} <strong>${years[years.length >> 1]}</strong></p>` +
+            `<h4>${qt.eras}</h4><div class="q-bar">${bar}</div>` +
+            `<div class="q-legend">${eras.map((c, k) => c ? `<span><i style="background:rgb(${ERAS[k].color})"></i>${t.eras[k][0]} ${Math.round((c / ids.length) * 100)} %</span>` : "").join("")}</div>` +
+            (useHtml ? `<h4>${qt.uses}</h4><div class="q-legend">${useHtml}</div>` : "") +
+            (lms.length ? `<h4>${qt.landmarks}</h4><div class="q-landmarks">${lms.map((i) => `<button type="button" data-i="${i}">★ ${escapeHtml(nameOf(i))}</button>`).join("")}</div>` : "") +
+            `<p class="card-links"><button type="button" class="q-zoom" data-q="${q}">${qt.zoom} →</button></p>`;
+        $("card-body").querySelectorAll(".q-landmarks button").forEach((b) => b.addEventListener("click", () => openCard(+b.dataset.i)));
+        $("card-body").querySelector(".q-zoom").addEventListener("click", () => {
+            if (state.split) toggleSplit();
+            const lonlat = metresToLonLat(D.qCentre[q]);
+            flyTo({ longitude: lonlat[0], latitude: lonlat[1], zoom: 15, pitch: 55, bearing: -20 });
+        });
+        $("card").hidden = false;
+        $("tooltip").hidden = true;
+    }
+
+    // metre offsets around the data origin to longitude / latitude (small-area approximation)
+    function metresToLonLat([x, y]) {
+        const [lon0, lat0] = D.meta.origin;
+        return [lon0 + x / (111320 * Math.cos((lat0 * Math.PI) / 180)), lat0 + y / 110540];
+    }
+
+    let splitRaf = 0;
+    function toggleSplit() {
+        state.split = !state.split;
+        $("t-split").classList.toggle("on", state.split);
+        $("t-split").setAttribute("aria-pressed", state.split);
+        document.body.classList.toggle("split-on", state.split);
+        if (state.split) flyTo({ ...INTRO.view, latitude: 49.603, zoom: 12.3, pitch: 40 });
+        const from = state.splitT, to = state.split ? 1 : 0, t0 = performance.now(), dur = GROW_MS ? 900 : 0;
+        cancelAnimationFrame(splitRaf);
+        const step = (now) => {
+            const p = dur ? Math.min(1, (now - t0) / dur) : 1;
+            const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+            state.splitT = from + (to - from) * e;
+            deckgl.setProps({ layers: layers() });
+            if (p < 1) splitRaf = requestAnimationFrame(step);
+        };
+        splitRaf = requestAnimationFrame(step);
+    }
+
     function closeCard() {
+        state.quarterCard = -1;
         state.card = -1;
         $("card").hidden = true;
     }
@@ -687,6 +902,11 @@
             g.fillRect(x0, H - hr, w, hr);
             g.fillStyle = `rgb(${mix(c, MUTE, 0.55)})`;
             g.fillRect(x0, H - hr - he, w, he);
+            if (state.hoverBar && b.from === state.hoverBar[0]) {
+                g.globalAlpha = 1;
+                g.fillStyle = "rgba(255, 244, 214, 0.9)";
+                g.fillRect(x0 - 0.5, H - Math.max(hr + he, 3), w + 1, Math.max(hr + he, 3));
+            }
         }
         g.globalAlpha = 1;
     }
@@ -832,6 +1052,7 @@
         renderStory();
         render();
         if (state.card >= 0) openCard(state.card);
+        if (state.quarterCard >= 0) openQuarter(state.quarterCard);
     }
 
     function fillAbout() {
@@ -860,6 +1081,7 @@
         toggle("t-context", "context");
         toggle("t-recorded", "recordedOnly");
         $("t-story").addEventListener("click", () => setStory(!state.story));
+        $("t-split").addEventListener("click", toggleSplit);
         $("close-story").addEventListener("click", () => setStory(false));
         $("close-card").addEventListener("click", closeCard);
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCard(); });

@@ -1,0 +1,713 @@
+[
+ {
+  "match": {
+   "lonlat": [
+    6.13221,
+    49.61096
+   ]
+  },
+  "photo": null,
+  "area": false,
+  "wiki": "Grand Ducal Palace, Luxembourg",
+  "title": {
+   "en": "Grand Ducal Palace",
+   "fr": "Palais grand-ducal",
+   "lb": "Groussherzogleche Palais"
+  },
+  "story": {
+   "en": "Built from 1572 as the town hall, with a Spanish Renaissance façade, it became the residence of the Grand Duke in 1890. The sovereign works here and receives heads of state.",
+   "fr": "Construit à partir de 1572 comme hôtel de ville, avec sa façade Renaissance espagnole, il devient la résidence du grand-duc en 1890. Le souverain y travaille et y reçoit les chefs d'État.",
+   "lb": "Vun 1572 un als Stadhaus gebaut, mat senger spuenescher Renaissance-Fassad, gëtt hien 1890 d'Residenz vum Groussherzog. De Souverän schafft hei an empfänkt Staatschefen."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/171829825"
+  },
+  "photo": "Hotel de la Chambre des deputes in Luxembourg City 01.jpg",
+  "area": false,
+  "wiki": "Chamber of Deputies (Luxembourg)",
+  "title": {
+   "en": "Chamber of Deputies",
+   "fr": "Chambre des Députés",
+   "lb": "Chamber"
+  },
+  "story": {
+   "en": "The national parliament sits in the Hôtel de la Chambre, built in 1858–1860 next to the Grand Ducal Palace. Its 60 deputies vote the laws of the Grand Duchy.",
+   "fr": "Le Parlement siège à l'Hôtel de la Chambre, construit en 1858–1860 à côté du Palais grand-ducal. Ses 60 députés votent les lois du Grand-Duché.",
+   "lb": "D'Parlament sëtzt am Chambersgebai, dat 1858–1860 nieft dem Groussherzogleche Palais gebaut gouf. Seng 60 Deputéiert stëmmen d'Gesetzer vum Groussherzogtum."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/9620051"
+  },
+  "photo": "City Hall of Luxembourg City 01.jpg",
+  "area": false,
+  "wiki": "Luxembourg City Hall",
+  "title": {
+   "en": "City Hall",
+   "fr": "Hôtel de Ville",
+   "lb": "Stadhaus"
+  },
+  "story": {
+   "en": "The City Hall on Place Guillaume II, the “Knuedler”, was built in 1830–1838 on the site of a Franciscan friary. The mayor and the municipal council of Luxembourg City meet here.",
+   "fr": "L'Hôtel de Ville de la place Guillaume II, le « Knuedler », a été construit en 1830–1838 à l'emplacement d'un couvent franciscain. Le bourgmestre et le conseil communal y siègent.",
+   "lb": "D'Stadhaus op der Plëss Guillaume II, dem „Knuedler“, gouf 1830–1838 op der Plaz vun engem Franziskanerklouschter gebaut. De Buergermeeschter an de Gemengerot sëtzen hei."
+  }
+ },
+ {
+  "match": {
+   "lonlat": [
+    6.13139,
+    49.60972
+   ]
+  },
+  "photo": null,
+  "area": false,
+  "wiki": "Notre-Dame Cathedral, Luxembourg",
+  "title": {
+   "en": "Notre-Dame Cathedral",
+   "fr": "Cathédrale Notre-Dame",
+   "lb": "Kathedral Notre-Dame"
+  },
+  "story": {
+   "en": "Built by the Jesuits in 1613–1621 and made a cathedral in 1870. The crypt holds the tombs of the grand-ducal family and of John the Blind.",
+   "fr": "Construite par les jésuites en 1613–1621, elle devient cathédrale en 1870. La crypte abrite les tombeaux de la famille grand-ducale et de Jean l'Aveugle.",
+   "lb": "Vun de Jesuiten 1613–1621 gebaut a 1870 zur Kathedral erhuewen. An der Kruuft leien d'Griewer vun der groussherzoglecher Famill a vum Jang de Blannen."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/157773917"
+  },
+  "photo": "Central Bank of Luxembourg.jpg",
+  "area": false,
+  "wiki": "Central Bank of Luxembourg",
+  "title": {
+   "en": "Central Bank of Luxembourg",
+   "fr": "Banque centrale du Luxembourg",
+   "lb": "Lëtzebuerger Zentralbank"
+  },
+  "story": {
+   "en": "Founded in 1998, the central bank is part of the Eurosystem with the European Central Bank. It succeeded the Luxembourg Monetary Institute.",
+   "fr": "Créée en 1998, la banque centrale fait partie de l'Eurosystème avec la Banque centrale européenne. Elle a succédé à l'Institut monétaire luxembourgeois.",
+   "lb": "Gegrënnt 1998, ass d'Zentralbank Deel vum Eurosystem mat der Europäescher Zentralbank. Si ass den Nofolger vum Lëtzebuerger Monetären Institut."
+  }
+ },
+ {
+  "match": {
+   "lonlat": [
+    6.13361,
+    49.59972
+   ]
+  },
+  "photo": "Luxembourg City railway station 2022-12 ---6.jpg",
+  "area": false,
+  "wiki": "Luxembourg railway station",
+  "title": {
+   "en": "Central Station",
+   "fr": "Gare centrale",
+   "lb": "Zentralgare"
+  },
+  "story": {
+   "en": "The station building, with its clock tower, was built in 1907–1913, when German railways ran the Luxembourg network. The first station of 1859 stood here, outside the fortress walls.",
+   "fr": "Le bâtiment de la gare et son clocher datent de 1907–1913, quand des chemins de fer allemands exploitaient le réseau luxembourgeois. La première gare de 1859 se trouvait ici, hors des murs de la forteresse.",
+   "lb": "D'Garegebai mat sengem Auerstuerm gouf 1907–1913 gebaut, wéi däitsch Eisebunne de Lëtzebuerger Netz bedriwwen hunn. Déi éischt Gare vun 1859 stoung hei, baussent de Festungsmaueren."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/108736"
+  },
+  "photo": "Abadía Neumünster, ciudad de Luxemburgo, Luxemburgo, 2023-12-16, DD 47.jpg",
+  "area": false,
+  "wiki": "Neumünster Abbey",
+  "title": {
+   "en": "Neumünster Abbey, Grund",
+   "fr": "Abbaye de Neumünster, Grund",
+   "lb": "Abtei Neimënster, Gronn"
+  },
+  "story": {
+   "en": "The heart of the Grund, the lower town on the Alzette. The Benedictines rebuilt their abbey here from 1688; it later served as a prison until 1984 and has been a cultural centre since 2004.",
+   "fr": "Le cœur du Grund, la ville basse au bord de l'Alzette. Les bénédictins y reconstruisent leur abbaye à partir de 1688 ; elle sert ensuite de prison jusqu'en 1984 et est un centre culturel depuis 2004.",
+   "lb": "D'Häerz vum Gronn, der Ënnerstad un der Uelzecht. D'Benediktiner bauen hir Abtei hei vun 1688 un nei op; spéider ass se e Prisong bis 1984, an zënter 2004 e Kulturzentrum."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/215826364"
+  },
+  "photo": "Spuerkeess Building (Place de Metz).jpg",
+  "area": false,
+  "wiki": "Banque et Caisse d'Épargne de l'État",
+  "title": {
+   "en": "Spuerkeess (BCEE) head office",
+   "fr": "Siège de la Spuerkeess (BCEE)",
+   "lb": "Sëtz vun der Spuerkeess (BCEE)"
+  },
+  "story": {
+   "en": "The state savings bank, founded in 1856, has its head office on Place de Metz, with its tower over the Pétrusse valley. It is one of the country's largest banks and employers.",
+   "fr": "La banque d'épargne de l'État, fondée en 1856, a son siège place de Metz, avec sa tour au-dessus de la vallée de la Pétrusse. C'est l'une des premières banques et l'un des premiers employeurs du pays.",
+   "lb": "D'Staatsspuerkeess, gegrënnt 1856, huet hire Sëtz op der Plëss vu Metz, mat hirem Tuerm iwwer dem Péitrussdall. Si ass eng vun de gréisste Banken an Employeuren am Land."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/95025008"
+  },
+  "photo": "Arcelor Mittal headquarters, Luxembourg City 15.JPG",
+  "area": false,
+  "wiki": "ArcelorMittal",
+  "title": {
+   "en": "ARBED building",
+   "fr": "Bâtiment ARBED",
+   "lb": "ARBED-Gebai"
+  },
+  "story": {
+   "en": "Built in 1920–1922 on Avenue de la Liberté as the head office of ARBED, the steel company founded in 1911 that made Luxembourg rich. ARBED became Arcelor in 2002 and ArcelorMittal in 2006.",
+   "fr": "Construit en 1920–1922 avenue de la Liberté comme siège de l'ARBED, l'entreprise sidérurgique fondée en 1911 qui a fait la richesse du Luxembourg. L'ARBED devient Arcelor en 2002 puis ArcelorMittal en 2006.",
+   "lb": "Gebaut 1920–1922 op der Avenue de la Liberté als Sëtz vun der ARBED, der Stolfirma, déi 1911 gegrënnt gouf an d'Land räich gemaach huet. D'ARBED gëtt 2002 Arcelor an 2006 ArcelorMittal."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/92702844"
+  },
+  "photo": "EP - Kirchberg from the skies 2025 (3).jpg",
+  "area": true,
+  "wiki": "Amazon (company)",
+  "title": {
+   "en": "Amazon",
+   "fr": "Amazon",
+   "lb": "Amazon"
+  },
+  "story": {
+   "en": "Amazon has had its European headquarters in Luxembourg since 2004, and is one of the largest private employers in the city.",
+   "fr": "Amazon a son siège européen au Luxembourg depuis 2004 et compte parmi les plus grands employeurs privés de la ville.",
+   "lb": "Amazon huet säi Sëtz fir Europa zënter 2004 zu Lëtzebuerg an ass ee vun de gréisste private Patronen an der Stad."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/386661353"
+  },
+  "photo": "EP - Kirchberg from the skies 2025 (3).jpg",
+  "area": true,
+  "wiki": "RTL Group",
+  "title": {
+   "en": "RTL City",
+   "fr": "RTL City",
+   "lb": "RTL City"
+  },
+  "story": {
+   "en": "Headquarters of RTL Group and of RTL Lëtzebuerg radio and television, opened on Kirchberg in 2017. RTL grew out of Radio Luxembourg, which began broadcasting across Europe in 1933.",
+   "fr": "Siège de RTL Group et de la radio et télévision RTL Lëtzebuerg, ouvert au Kirchberg en 2017. RTL est née de Radio Luxembourg, qui émettait vers toute l'Europe dès 1933.",
+   "lb": "Sëtz vun der RTL Group an dem RTL Lëtzebuerg Radio an Tëlee, um Kierchbierg zënter 2017. RTL ass aus Radio Lëtzebuerg entstanen, deen zënter 1933 a ganz Europa gesend huet."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/9067663"
+  },
+  "photo": "Luxembourg, Villa Louvigny (101).jpg",
+  "area": false,
+  "wiki": "Villa Louvigny",
+  "title": {
+   "en": "Villa Louvigny",
+   "fr": "Villa Louvigny",
+   "lb": "Villa Louvigny"
+  },
+  "story": {
+   "en": "In the Municipal Park, on the site of a fortress fort. From 1933 Radio Luxembourg broadcast from here to much of Europe; the villa later became the home of the Ministry of Health.",
+   "fr": "Dans le parc municipal, à l'emplacement d'un fort de la forteresse. À partir de 1933, Radio Luxembourg émettait d'ici vers une grande partie de l'Europe ; la villa abrite ensuite le ministère de la Santé.",
+   "lb": "Am Stadpark, op der Plaz vun engem Fort vun der Festung. Vun 1933 un huet Radio Lëtzebuerg vun hei an e groussen Deel vun Europa gesend; spéider ass do de Gesondheetsministère."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/2632396"
+  },
+  "photo": "Luxembourg Clearstream.jpg",
+  "area": false,
+  "wiki": "Clearstream",
+  "title": {
+   "en": "Clearstream",
+   "fr": "Clearstream",
+   "lb": "Clearstream"
+  },
+  "story": {
+   "en": "Founded as Cedel in 1970, Clearstream settles and keeps securities for banks around the world, and is one of the large employers of the financial centre.",
+   "fr": "Fondée sous le nom de Cedel en 1970, Clearstream règle et conserve des titres pour des banques du monde entier ; c'est l'un des grands employeurs de la place financière.",
+   "lb": "Als Cedel 1970 gegrënnt, verwalt Clearstream Wäertpabeiere fir Banken op der ganzer Welt an ass ee vun de groussen Employeure vun der Finanzplaz."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/1966583"
+  },
+  "photo": "Rue Aldringen sb.jpg",
+  "area": true,
+  "wiki": "POST Luxembourg",
+  "title": {
+   "en": "Hôtel des Postes",
+   "fr": "Hôtel des Postes",
+   "lb": "Postgebai"
+  },
+  "story": {
+   "en": "The main post office of the city centre. POST Luxembourg, the state postal and telecom company, is one of the country's largest employers.",
+   "fr": "La grande poste du centre-ville. POST Luxembourg, l'entreprise publique de poste et de télécoms, est l'un des premiers employeurs du pays.",
+   "lb": "Den Haaptpostbüro am Stadzentrum. POST Luxembourg, déi ëffentlech Post- an Telekomfirma, ass ee vun de gréissten Employeuren am Land."
+  }
+ },
+ {
+  "match": {
+   "wikidata": "Q104680419"
+  },
+  "photo": "CFL-Gebäude Luxembourg 7 place de la Gare 01.jpg",
+  "area": false,
+  "wiki": "Société Nationale des Chemins de Fer Luxembourgeois",
+  "title": {
+   "en": "CFL head office",
+   "fr": "Siège des CFL",
+   "lb": "Sëtz vun de CFL"
+  },
+  "story": {
+   "en": "The national railway company CFL, founded in 1946, has its head office facing the station. With its trains, buses and freight it is one of the country's largest employers.",
+   "fr": "La société nationale des chemins de fer CFL, fondée en 1946, a son siège face à la gare. Avec ses trains, ses bus et le fret, c'est l'un des premiers employeurs du pays.",
+   "lb": "Déi national Eisebunnsgesellschaft CFL, gegrënnt 1946, huet hire Sëtz vis-à-vis vun der Gare. Mat Zich, Bussen a Fret ass si ee vun de gréissten Employeuren am Land."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/8603699"
+  },
+  "photo": "Auchan Kirchberg.jpg",
+  "area": false,
+  "wiki": "Kirchberg, Luxembourg",
+  "title": {
+   "en": "Kirchberg shopping centre (Auchan) and Bech building",
+   "fr": "Centre commercial du Kirchberg (Auchan) et bâtiment Bech",
+   "lb": "Akafszentrum Kierchbierg (Auchan) a Bech-Gebai"
+  },
+  "story": {
+   "en": "Auchan opened its hypermarket on Kirchberg in 1996, in the shopping centre at the heart of the European quarter. Above it, the Bech building houses services of the European Commission, among them Eurostat.",
+   "fr": "Auchan ouvre son hypermarché au Kirchberg en 1996, dans le centre commercial au cœur du quartier européen. Au-dessus, le bâtiment Bech accueille des services de la Commission européenne, dont Eurostat.",
+   "lb": "Den Auchan mécht 1996 säin Hypermarché um Kierchbierg op, am Akafszentrum am Häerz vum europäesche Quartier. Driwwer sinn am Bech-Gebai Servicer vun der Europäescher Kommissioun, dorënner Eurostat."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/188774226"
+  },
+  "photo": "Court of Justice of the European Union Luxembourg 05.jpg",
+  "area": false,
+  "wiki": "Court of Justice of the European Union",
+  "title": {
+   "en": "Court of Justice of the European Union",
+   "fr": "Cour de justice de l'Union européenne",
+   "lb": "Geriichtshaff vun der Europäescher Unioun"
+  },
+  "story": {
+   "en": "The EU's highest court has sat in Luxembourg since 1952. Its palace on Kirchberg, opened in 1973, has been extended several times; it ensures that EU law is applied the same way in every member state.",
+   "fr": "La plus haute juridiction de l'UE siège à Luxembourg depuis 1952. Son palais du Kirchberg, inauguré en 1973, a été agrandi plusieurs fois ; elle veille à ce que le droit de l'Union s'applique partout de la même façon.",
+   "lb": "Dat héchst Geriicht vun der EU sëtzt zënter 1952 zu Lëtzebuerg. Säi Palais um Kierchbierg, 1973 opgemaach, gouf e puermol vergréissert; et suergt dofir, datt d'EU-Recht iwwerall d'selwecht ugewannt gëtt."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/133301875"
+  },
+  "photo": "Tours de la Cour de justice de l'Union européenne photo 3.jpg",
+  "area": false,
+  "wiki": "Court of Justice of the European Union",
+  "title": {
+   "en": "Towers of the Court of Justice",
+   "fr": "Tours de la Cour de justice",
+   "lb": "Tierm vum Geriichtshaff"
+  },
+  "story": {
+   "en": "The two golden towers by the architect Dominique Perrault, inaugurated in 2008, house the Court's translators: every judgment is published in all the official languages of the EU.",
+   "fr": "Les deux tours dorées de l'architecte Dominique Perrault, inaugurées en 2008, abritent les traducteurs de la Cour : chaque arrêt est publié dans toutes les langues officielles de l'UE.",
+   "lb": "Déi zwee gëlle Tierm vum Architekt Dominique Perrault, 2008 ageweit, sinn fir d'Iwwersetzer vum Geriichtshaff: all Urteel gëtt an alle Amtssprooche vun der EU publizéiert."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/11283685"
+  },
+  "photo": "European Investment Bank Headquarter Building.jpg",
+  "area": false,
+  "wiki": "European Investment Bank",
+  "title": {
+   "en": "European Investment Bank",
+   "fr": "Banque européenne d'investissement",
+   "lb": "Europäesch Investitiounsbank"
+  },
+  "story": {
+   "en": "The EU's bank, founded in 1958, moved to Luxembourg in 1968. It lends for projects across Europe and beyond; its glass-roofed east building on Kirchberg was completed in 2008.",
+   "fr": "La banque de l'UE, fondée en 1958, s'installe à Luxembourg en 1968. Elle prête pour des projets en Europe et au-delà ; son bâtiment est à verrière, au Kirchberg, a été achevé en 2008.",
+   "lb": "D'Bank vun der EU, gegrënnt 1958, ass zënter 1968 zu Lëtzebuerg. Si finanzéiert Projeten an Europa an doriwwer eraus; hiert Ostgebai mam Glasdaach um Kierchbierg gouf 2008 fäerdeg."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/48992137"
+  },
+  "photo": "European Investment Bank Group Headquarters in Kirchberg, Luxembourg.jpg",
+  "area": false,
+  "wiki": "European Investment Bank",
+  "title": {
+   "en": "European Investment Bank",
+   "fr": "Banque européenne d'investissement",
+   "lb": "Europäesch Investitiounsbank"
+  },
+  "story": {
+   "en": "Part of the head office of the EU's bank on Kirchberg; the EIB has been in Luxembourg since 1968.",
+   "fr": "Une partie du siège de la banque de l'UE au Kirchberg ; la BEI est à Luxembourg depuis 1968.",
+   "lb": "En Deel vum Sëtz vun der Bank vun der EU um Kierchbierg; d'EIB ass zënter 1968 zu Lëtzebuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "node/2049848255"
+  },
+  "photo": "European Investment Fund.jpg",
+  "area": false,
+  "wiki": "European Investment Fund",
+  "title": {
+   "en": "European Investment Fund",
+   "fr": "Fonds européen d'investissement",
+   "lb": "Europäesche Investitiounsfong"
+  },
+  "story": {
+   "en": "Created in 1994 and part of the EIB Group, the fund backs small businesses and start-ups across Europe through banks and investment funds.",
+   "fr": "Créé en 1994 et membre du groupe BEI, le fonds soutient les PME et les jeunes pousses en Europe par l'intermédiaire de banques et de fonds.",
+   "lb": "1994 gegrënnt an Deel vun der EIB-Grupp, ënnerstëtzt de Fong kleng Betriber a Start-ups an Europa iwwer Banken a Fongen."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/372682369"
+  },
+  "photo": "ECA building.jpg",
+  "area": false,
+  "wiki": "European Court of Auditors",
+  "title": {
+   "en": "European Court of Auditors",
+   "fr": "Cour des comptes européenne",
+   "lb": "Europäesche Rechnungshaff"
+  },
+  "story": {
+   "en": "Set up in 1977, the Court of Auditors checks how the EU collects and spends its money. It has always had its seat in Luxembourg.",
+   "fr": "Créée en 1977, la Cour des comptes vérifie comment l'UE perçoit et dépense son argent. Elle a toujours eu son siège à Luxembourg.",
+   "lb": "1977 gegrënnt, kontrolléiert de Rechnungshaff, wéi d'EU hiert Geld akasséiert an ausgëtt. Hie war ëmmer zu Lëtzebuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/4283127"
+  },
+  "photo": "EP - Kirchberg from the skies 2025 (3).jpg",
+  "area": true,
+  "wiki": "European Parliament",
+  "title": {
+   "en": "European Parliament, Konrad Adenauer building",
+   "fr": "Parlement européen, bâtiment Konrad Adenauer",
+   "lb": "Europaparlament, Konrad-Adenauer-Gebai"
+  },
+  "story": {
+   "en": "Luxembourg hosts the General Secretariat of the European Parliament and much of its translation service. The new Konrad Adenauer building on Kirchberg replaces the 1970s one.",
+   "fr": "Luxembourg accueille le Secrétariat général du Parlement européen et une grande partie de ses traducteurs. Le nouveau bâtiment Konrad Adenauer, au Kirchberg, remplace celui des années 1970.",
+   "lb": "Zu Lëtzebuerg sinn de Generalsekretariat vum Europaparlament an e groussen Deel vu sengen Iwwersetzer. Dat neit Konrad-Adenauer-Gebai um Kierchbierg ersetzt dat aus de 1970er Joren."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/18163400"
+  },
+  "photo": "EP - Kirchberg from the skies 2025 (3).jpg",
+  "area": true,
+  "wiki": "European Parliament",
+  "title": {
+   "en": "European Parliament, Konrad Adenauer 2",
+   "fr": "Parlement européen, Konrad Adenauer 2",
+   "lb": "Europaparlament, Konrad Adenauer 2"
+  },
+  "story": {
+   "en": "Second wing of the new Konrad Adenauer complex of the European Parliament's General Secretariat on Kirchberg.",
+   "fr": "Deuxième aile du nouveau complexe Konrad Adenauer du Secrétariat général du Parlement européen au Kirchberg.",
+   "lb": "Zweete Fligel vum neie Konrad-Adenauer-Komplex vum Generalsekretariat vum Europaparlament um Kierchbierg."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/1686713"
+  },
+  "photo": "Robert Schuman building.jpg",
+  "area": false,
+  "wiki": "Robert Schuman Building",
+  "title": {
+   "en": "Robert Schuman building",
+   "fr": "Bâtiment Robert Schuman",
+   "lb": "Robert-Schuman-Gebai"
+  },
+  "story": {
+   "en": "One of the first European buildings on Kirchberg, opened in 1973 for the European Parliament, whose plenary hemicycle it housed.",
+   "fr": "L'un des premiers bâtiments européens du Kirchberg, ouvert en 1973 pour le Parlement européen, dont il abritait l'hémicycle.",
+   "lb": "Ee vun den éischten europäesche Gebaier um Kierchbierg, 1973 fir d'Europaparlament opgemaach, dat do säin Hemizykel hat."
+  }
+ },
+ {
+  "match": {
+   "ref": "node/10084788827"
+  },
+  "photo": "EPPO Luxembourg 01.jpg",
+  "area": false,
+  "wiki": "European Public Prosecutor's Office",
+  "title": {
+   "en": "European Public Prosecutor's Office",
+   "fr": "Parquet européen",
+   "lb": "Europäesch Staatsanwaltschaft"
+  },
+  "story": {
+   "en": "Operational since 2021, the EPPO investigates and prosecutes fraud against the EU budget. It sits in Tower B of the Porte de l'Europe on Kirchberg.",
+   "fr": "Opérationnel depuis 2021, le Parquet européen enquête sur les fraudes au budget de l'UE et les poursuit. Il siège dans la tour B de la Porte de l'Europe, au Kirchberg.",
+   "lb": "Zënter 2021 aktiv, ermëttelt déi Europäesch Staatsanwaltschaft géint Bedruch zu Laaschte vum EU-Budget. Si sëtzt am Tuerm B vun der Porte de l'Europe um Kierchbierg."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/54435172"
+  },
+  "photo": "Luxembourg, Office des publications de l'Union -européenne 08-2023.jpg",
+  "area": false,
+  "wiki": "Publications Office of the European Union",
+  "title": {
+   "en": "Publications Office of the EU",
+   "fr": "Office des publications de l'UE",
+   "lb": "Publikatiounsoffice vun der EU"
+  },
+  "story": {
+   "en": "Publishes the Official Journal and all EU publications, in every official language. It has been in Luxembourg since 1969.",
+   "fr": "Publie le Journal officiel et toutes les publications de l'UE, dans toutes les langues officielles. Il est à Luxembourg depuis 1969.",
+   "lb": "Verëffentlecht den Amtsblat an all EU-Publikatiounen, an alle Amtssproochen. Hien ass zënter 1969 zu Lëtzebuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/27753305"
+  },
+  "photo": "European School of Luxembourg (2003).jpg",
+  "area": false,
+  "wiki": "European School, Luxembourg I",
+  "title": {
+   "en": "European School Luxembourg I",
+   "fr": "École européenne Luxembourg I",
+   "lb": "Europäesch Schoul Lëtzebuerg I"
+  },
+  "story": {
+   "en": "The very first European School opened in Luxembourg in 1953, for the children of the staff of the Coal and Steel Community. Its Kirchberg campus now teaches in many languages.",
+   "fr": "La toute première École européenne a ouvert à Luxembourg en 1953, pour les enfants du personnel de la Communauté du charbon et de l'acier. Son campus du Kirchberg enseigne aujourd'hui dans de nombreuses langues.",
+   "lb": "Déi alleréischt Europäesch Schoul gouf 1953 zu Lëtzebuerg opgemaach, fir d'Kanner vum Personal vun der Kuel- a Stolgemeinschaft. Hire Campus um Kierchbierg léiert haut a ville Sproochen."
+  }
+ },
+ {
+  "match": {
+   "ref": "node/266229473"
+  },
+  "photo": "Auchan Kirchberg.jpg",
+  "area": true,
+  "wiki": "European Commission",
+  "title": {
+   "en": "European Commission, Bech building",
+   "fr": "Commission européenne, bâtiment Bech",
+   "lb": "Europäesch Kommissioun, Bech-Gebai"
+  },
+  "story": {
+   "en": "Offices of the European Commission in Luxembourg, one of the three seats of the EU institutions with Brussels and Strasbourg.",
+   "fr": "Bureaux de la Commission européenne à Luxembourg, l'un des trois sièges des institutions de l'UE avec Bruxelles et Strasbourg.",
+   "lb": "Büroe vun der Europäescher Kommissioun zu Lëtzebuerg, engem vun den dräi Sëtzer vun den EU-Institutioune mat Bréissel a Stroossbuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/7021876"
+  },
+  "photo": "EP - Kirchberg from the skies 2025 (3).jpg",
+  "area": true,
+  "wiki": "European Commission",
+  "title": {
+   "en": "European Commission, T2",
+   "fr": "Commission européenne, T2",
+   "lb": "Europäesch Kommissioun, T2"
+  },
+  "story": {
+   "en": "Offices of the European Commission in Luxembourg, one of the three seats of the EU institutions with Brussels and Strasbourg.",
+   "fr": "Bureaux de la Commission européenne à Luxembourg, l'un des trois sièges des institutions de l'UE avec Bruxelles et Strasbourg.",
+   "lb": "Büroe vun der Europäescher Kommissioun zu Lëtzebuerg, engem vun den dräi Sëtzer vun den EU-Institutioune mat Bréissel a Stroossbuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/9692734"
+  },
+  "photo": "Luxembourg, Cloche d'Or, Drosbach (1).JPG",
+  "area": true,
+  "wiki": "European Commission",
+  "title": {
+   "en": "European Commission, Laccolith",
+   "fr": "Commission européenne, Laccolith",
+   "lb": "Europäesch Kommissioun, Laccolith"
+  },
+  "story": {
+   "en": "Offices of the European Commission in Luxembourg, one of the three seats of the EU institutions with Brussels and Strasbourg.",
+   "fr": "Bureaux de la Commission européenne à Luxembourg, l'un des trois sièges des institutions de l'UE avec Bruxelles et Strasbourg.",
+   "lb": "Büroe vun der Europäescher Kommissioun zu Lëtzebuerg, engem vun den dräi Sëtzer vun den EU-Institutioune mat Bréissel a Stroossbuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/9692735"
+  },
+  "photo": "Luxembourg, Cloche d'Or, Drosbach (1).JPG",
+  "area": true,
+  "wiki": "European Commission",
+  "title": {
+   "en": "European Commission, Euroforum",
+   "fr": "Commission européenne, Euroforum",
+   "lb": "Europäesch Kommissioun, Euroforum"
+  },
+  "story": {
+   "en": "Offices of the European Commission in Luxembourg, one of the three seats of the EU institutions with Brussels and Strasbourg.",
+   "fr": "Bureaux de la Commission européenne à Luxembourg, l'un des trois sièges des institutions de l'UE avec Bruxelles et Strasbourg.",
+   "lb": "Büroe vun der Europäescher Kommissioun zu Lëtzebuerg, engem vun den dräi Sëtzer vun den EU-Institutioune mat Bréissel a Stroossbuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/2799532"
+  },
+  "photo": "Luxembourg, Cloche d'Or, Drosbach (1).JPG",
+  "area": true,
+  "wiki": "European Commission",
+  "title": {
+   "en": "European Commission, Ariane",
+   "fr": "Commission européenne, Ariane",
+   "lb": "Europäesch Kommissioun, Ariane"
+  },
+  "story": {
+   "en": "Offices of the European Commission in Luxembourg, one of the three seats of the EU institutions with Brussels and Strasbourg.",
+   "fr": "Bureaux de la Commission européenne à Luxembourg, l'un des trois sièges des institutions de l'UE avec Bruxelles et Strasbourg.",
+   "lb": "Büroe vun der Europäescher Kommissioun zu Lëtzebuerg, engem vun den dräi Sëtzer vun den EU-Institutioune mat Bréissel a Stroossbuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "node/2186351463"
+  },
+  "photo": "Luxembourg, Gasperich, Drosbach (1).jpg",
+  "area": false,
+  "wiki": "European Commission",
+  "title": {
+   "en": "European Commission, Drosbach",
+   "fr": "Commission européenne, Drosbach",
+   "lb": "Europäesch Kommissioun, Drosbach"
+  },
+  "story": {
+   "en": "Offices of the European Commission in Luxembourg, one of the three seats of the EU institutions with Brussels and Strasbourg.",
+   "fr": "Bureaux de la Commission européenne à Luxembourg, l'un des trois sièges des institutions de l'UE avec Bruxelles et Strasbourg.",
+   "lb": "Büroe vun der Europäescher Kommissioun zu Lëtzebuerg, engem vun den dräi Sëtzer vun den EU-Institutioune mat Bréissel a Stroossbuerg."
+  }
+ },
+ {
+  "match": {
+   "ref": "node/12148492456"
+  },
+  "photo": "EP - Kirchberg from the skies 2025 (3).jpg",
+  "area": true,
+  "wiki": "European Parliament",
+  "title": {
+   "en": "Europa Experience",
+   "fr": "Europa Experience",
+   "lb": "Europa Experience"
+  },
+  "story": {
+   "en": "The European Parliament's visitor centre, where you can learn how the EU works and how its laws are made.",
+   "fr": "Le centre des visiteurs du Parlement européen, pour découvrir le fonctionnement de l'UE et la fabrication de ses lois.",
+   "lb": "De Visiteszenter vum Europaparlament, fir ze entdecken, wéi d'EU funktionéiert a wéi hir Gesetzer gemaach ginn."
+  }
+ },
+ {
+  "match": {
+   "ref": "relation/2017775"
+  },
+  "photo": "Court of Justice of the European Union Luxembourg 05.jpg",
+  "area": true,
+  "wiki": "Court of Justice of the European Union",
+  "title": {
+   "en": "Court of Justice complex, building T",
+   "fr": "Complexe de la Cour de justice, bâtiment T",
+   "lb": "Komplex vum Geriichtshaff, Gebai T"
+  },
+  "story": {
+   "en": "Part of the Court of Justice complex on Kirchberg, shared with the Court of Auditors and the Translation Centre for the Bodies of the EU.",
+   "fr": "Partie du complexe de la Cour de justice au Kirchberg, partagée avec la Cour des comptes et le Centre de traduction des organes de l'UE.",
+   "lb": "Deel vum Komplex vum Geriichtshaff um Kierchbierg, zesumme mam Rechnungshaff an dem Iwwersetzungszenter vun den EU-Agencen."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/9653796"
+  },
+  "photo": "Luxemburg Grand Theatre 3.jpg",
+  "area": false,
+  "wiki": "Grand Théâtre de Luxembourg",
+  "title": {
+   "en": "Grand Théâtre",
+   "fr": "Grand Théâtre",
+   "lb": "Grousst Theater"
+  },
+  "story": {
+   "en": "The city's main theatre and opera house, opened in 1964 on the Limpertsberg.",
+   "fr": "Le principal théâtre et opéra de la ville, ouvert en 1964 au Limpertsberg.",
+   "lb": "Den Haapttheater an d'Oper vun der Stad, 1964 um Lampertsbierg opgemaach."
+  }
+ },
+ {
+  "match": {
+   "ref": "way/53087984"
+  },
+  "photo": "Villa Vauban Luxembourg 01.jpg",
+  "area": false,
+  "wiki": "Villa Vauban",
+  "title": {
+   "en": "Villa Vauban",
+   "fr": "Villa Vauban",
+   "lb": "Villa Vauban"
+  },
+  "story": {
+   "en": "A 19th-century villa built on the foundations of one of Vauban's fortifications, now the city's art museum.",
+   "fr": "Une villa du XIXe siècle bâtie sur les fondations d'une fortification de Vauban, devenue le musée d'art de la ville.",
+   "lb": "Eng Villa aus dem 19. Joerhonnert op de Fundamenter vun enger Festung vum Vauban, haut de Konschtmusée vun der Stad."
+  }
+ },
+ {
+  "match": {
+   "ref": "Q136736082"
+  },
+  "photo": "Palais de la Cour de Justice CJEU May 2009 Gallery and library.jpg",
+  "area": false,
+  "wiki": "Court of Justice of the European Union",
+  "title": {
+   "en": "Library of the Court of Justice",
+   "fr": "Bibliothèque de la Cour de justice",
+   "lb": "Bibliothéik vum Geriichtshaff"
+  },
+  "story": {
+   "en": "The library of the Court of Justice of the European Union, one of the largest collections of European law, open to the Court's judges and staff.",
+   "fr": "La bibliothèque de la Cour de justice de l'Union européenne, l'une des plus grandes collections de droit européen, au service des juges et du personnel de la Cour.",
+   "lb": "D'Bibliothéik vum Geriichtshaff vun der Europäescher Unioun, eng vun de gréisste Sammlunge vun europäeschem Recht, fir d'Riichter an d'Personal vum Geriichtshaff."
+  }
+ }
+]

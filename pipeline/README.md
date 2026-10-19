@@ -24,7 +24,11 @@ venv/bin/python 03_context.py work
 venv/bin/python 04_build.py work ../data
 venv/bin/python 05_media.py ../data
 venv/bin/python 06_occupants.py work ../data
+venv/bin/python 07_photos.py work ../data
+venv/bin/python 08_landmarks.py work ../data
 ```
+
+`07_photos.py` adds Commons photos for occupied buildings from OSM tags and Wikidata only (a free search picked wrong photos). `08_landmarks.py` places the hand-written stories of `landmarks.json` (state, EU institutions, main employers, station, Grund…, in EN, FR and LB) on their buildings, each with a checked Commons photo; `"area": true` marks a photo of the surroundings when Commons has none of the building.
 
 `06_occupants.py` places the occupants of buildings (ministries and state services, EU institutions, embassies, radio, TV and press, banks, companies, schools and culture) from OpenStreetMap and Wikidata, and gives each building the use of its most significant occupant. The classification rules are regular expressions at the top of the script.
 
