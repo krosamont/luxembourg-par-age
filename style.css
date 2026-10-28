@@ -1690,13 +1690,19 @@ body.story-on .view-tools {
     }
 }
 
-/* link to the light version (clair/index.html) */
-.theme-switch {
-    color: var(--text);
-    text-decoration: none;
-    padding: 7px 12px;
+/* the switch between the dark and the light version is fixed at the top right of every page of data-workers.com
+   (its look: <style id="theme-switch"> in index.html): the header leaves room for it */
+.top {
+    right: 170px;
 }
 
-.theme-switch:hover {
-    border-color: var(--accent);
+@media (max-width: 760px), (max-height: 500px) {
+    .top {
+        top: 52px;
+        right: 16px;
+    }
+
+    .view-tools {
+        top: 148px;
+    }
 }
