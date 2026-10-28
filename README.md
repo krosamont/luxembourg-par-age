@@ -6,7 +6,7 @@ Live: https://data-workers.com/projet/luxembourg_evolution/ (also https://krosam
 
 Every push to `main` is deployed to data-workers.com by `.github/workflows/deploy.yml` (FTPS, with an FTP account limited to the project folder).
 
-A static page: `index.html`, `app.js`, `style.css`, `story.js` (chapters and rulers), `i18n.js` (interface text) and `data/` (1.5 MB). To view it locally:
+A static page: `index.html` (and its light version `clair/index.html`, same scripts and data, `<html data-theme="light">`), `app.js`, `style.css`, `story.js` (chapters and rulers), `i18n.js` (interface text) and `data/` (1.5 MB). To view it locally:
 
 ```bash
 python3 -m http.server 8765

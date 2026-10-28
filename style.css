@@ -1689,3 +1689,14 @@ body.story-on .view-tools {
         margin-left: -12px;
     }
 }
+
+/* link to the light version (clair/index.html) */
+.theme-switch {
+    color: var(--text);
+    text-decoration: none;
+    padding: 7px 12px;
+}
+
+.theme-switch:hover {
+    border-color: var(--accent);
+}

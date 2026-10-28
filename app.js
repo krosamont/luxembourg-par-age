@@ -18,13 +18,24 @@
         { from: 2011, to: MAX_YEAR, color: [228, 62, 124] },
     ];
     const HEIGHT_STOPS = [[0, [46, 58, 110]], [8, [52, 120, 176]], [16, [60, 186, 164]], [30, [190, 214, 84]], [60, [246, 160, 62]], [120, [236, 72, 96]]];
-    const MUTE = [58, 60, 66];
+    // the light version (clair/index.html, <html data-theme="light">) draws the map on the beige paper of the site
+    const LIGHT = document.documentElement.dataset.theme === "light";
+    const C = LIGHT
+        ? { clear: [235, 231, 222], green: [205, 214, 190], water: [178, 198, 214], outline: [29, 27, 25, 46], split: [194, 57, 63, 170],
+            dim: [235, 231, 222], hot: [29, 27, 25], rise: [29, 27, 25], label: [29, 27, 25, 235], halo: [246, 243, 236, 230],
+            names: [74, 70, 63, 150], dot: [29, 27, 25], marker: [194, 57, 63], markerLine: [246, 243, 236], highlight: [29, 27, 25, 120],
+            histHot: "rgba(29, 27, 25, 0.85)" }
+        : { clear: [14, 17, 22], green: [26, 46, 34], water: [32, 70, 112], outline: [255, 255, 255, 34], split: [242, 193, 78, 140],
+            dim: [14, 17, 22], hot: [255, 244, 214], rise: [255, 236, 190], label: [255, 255, 255, 235], halo: [14, 17, 22, 230],
+            names: [200, 205, 215, 120], dot: [255, 255, 255], marker: [242, 193, 78], markerLine: [14, 17, 22], highlight: [255, 255, 255, 200],
+            histHot: "rgba(255, 244, 214, 0.9)" };
+    const MUTE = LIGHT ? [200, 195, 186] : [58, 60, 66];
     const USES = ["gov", "eu", "embassy", "media", "finance", "company", "public"];
     const USE_COLORS = {
         gov: [232, 72, 78], eu: [74, 124, 242], embassy: [176, 112, 232], media: [242, 193, 78],
         finance: [56, 196, 152], company: [150, 168, 190], public: [240, 142, 64],
     };
-    const NO_USE = [46, 50, 58];
+    const NO_USE = LIGHT ? [190, 186, 178] : [46, 50, 58];
     // hand-placed; coordinates from Wikidata where it has them. Names are in i18n.js, same order.
     const LANDMARKS = [
         [6.13221, 49.61096, "end"], [6.13139, 49.60972, "end"], [6.13698, 49.61178], [6.13750, 49.60944],
@@ -133,7 +144,7 @@
         const hb = state.hoverBar;
         if (hb) {
             const y = D.year[i];
-            return y >= hb[0] && y <= hb[1] ? [255, 244, 214] : mix(baseColor(i), [14, 17, 22], 0.6);
+            return y >= hb[0] && y <= hb[1] ? C.hot : mix(baseColor(i), C.dim, 0.6);
         }
         return baseColor(i);
     }
@@ -207,8 +218,8 @@
         const split = state.splitT > 0;
         const shift = (q) => [D.qOffset[q][0] * state.splitT, D.qOffset[q][1] * state.splitT];
         if (state.context && !split) {
-            out.push(new SolidPolygonLayer({ id: "green", ...common, data: D.ctx.greenRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: [26, 46, 34] }));
-            out.push(new SolidPolygonLayer({ id: "water", ...common, data: D.ctx.waterRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: [32, 70, 112] }));
+            out.push(new SolidPolygonLayer({ id: "green", ...common, data: D.ctx.greenRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: C.green }));
+            out.push(new SolidPolygonLayer({ id: "water", ...common, data: D.ctx.waterRings, positionFormat: "XY", getPolygon: (d) => d, getFillColor: C.water }));
         }
         out.push(new PathLayer({
             id: "quartiers", ...common, data: D.ctx.quartiers, positionFormat: "XY",
@@ -217,13 +228,13 @@
                 const [dx, dy] = shift(D.qByName[d.name] ?? 0);
                 return d.path.map((v, k) => v + (k % 2 ? dy : dx));
             },
-            getColor: split ? [242, 193, 78, 140] : [255, 255, 255, 34], getWidth: split ? 1.5 : 1, widthUnits: "pixels",
+            getColor: split ? C.split : C.outline, getWidth: split ? 1.5 : 1, widthUnits: "pixels",
             updateTriggers: { getPath: state.splitT },
         }));
         const buildingProps = {
             ...common, positionFormat: "XY",
             extruded: true, wireframe: false, pickable: true, autoHighlight: true,
-            highlightColor: [255, 255, 255, 200],
+            highlightColor: C.highlight,
             getPolygon: (i) => D.polys[i],
             getElevation: (i) => D.height[i] / 10,
             getFillColor: buildingColor,
@@ -243,7 +254,7 @@
         } else out.push(new SolidPolygonLayer({
             id: "buildings", ...common, data: D.ids, positionFormat: "XY",
             extruded: true, wireframe: false, pickable: true, autoHighlight: true,
-            highlightColor: [255, 255, 255, 200],
+            highlightColor: C.highlight,
             getPolygon: (i) => D.polys[i],
             getElevation: (i) => D.height[i] / 10,
             getFillColor: buildingColor,
@@ -261,7 +272,7 @@
                 extruded: true, wireframe: false,
                 getPolygon: (i) => D.polys[i],
                 getElevation: (i) => (D.height[i] / 10) * riseOf(i),
-                getFillColor: (i) => mix(buildingColor(i), [255, 236, 190], 0.35 * (1 - riseOf(i))),
+                getFillColor: (i) => mix(buildingColor(i), C.rise, 0.35 * (1 - riseOf(i))),
                 material: { ambient: 0.45, diffuse: 0.65, shininess: 12, specularColor: [40, 40, 40] },
                 updateTriggers: { getElevation: grow.frame, getFillColor: [grow.frame, state.mode, state.useOnly, String(state.hoverBar)] },
             }));
@@ -275,7 +286,7 @@
             },
             updateTriggers: { getPosition: state.splitT },
             getRadius: 5, radiusUnits: "pixels", stroked: true, lineWidthUnits: "pixels",
-            getLineWidth: 2, getLineColor: [14, 17, 22], getFillColor: [242, 193, 78], pickable: true,
+            getLineWidth: 2, getLineColor: C.markerLine, getFillColor: C.marker, pickable: true,
             onHover: (info) => onHover({ ...info, object: info.object ? info.object.i : null }),
             onClick: (info) => info.object && openCard(info.object.i),
             parameters: { depthCompare: "always" },
@@ -285,8 +296,8 @@
                 id: "quarter-labels", ...common, data: D.meta.quartiers.map((name, q) => ({ name, q })),
                 getPosition: ({ q }) => { const [dx, dy] = shift(q); return [D.qCentre[q][0] + dx, D.qCentre[q][1] + dy, 60]; },
                 getText: ({ name, q }) => `${name.toUpperCase()}\n${fmt(D.qIds[q].length)}`,
-                getSize: 13, getColor: [255, 255, 255, 235], fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700,
-                characterSet: "auto", lineHeight: 1.1, outlineWidth: 4, outlineColor: [14, 17, 22, 230], fontSettings: { sdf: true },
+                getSize: 13, getColor: C.label, fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700,
+                characterSet: "auto", lineHeight: 1.1, outlineWidth: 4, outlineColor: C.halo, fontSettings: { sdf: true },
                 background: false, pickable: true, onClick: (info) => info.object && openQuarter(info.object.q),
                 updateTriggers: { getPosition: state.splitT, getText: state.lang },
                 parameters: { depthCompare: "always" },
@@ -294,18 +305,18 @@
         } else out.push(new TextLayer({
             id: "quartier-names", ...common, data: D.ctx.quartiers,
             getPosition: (d) => d.centre, getText: (d) => d.name.toUpperCase(),
-            getSize: 10.5, getColor: [200, 205, 215, 120], fontFamily: "Barlow Condensed, sans-serif",
+            getSize: 10.5, getColor: C.names, fontFamily: "Barlow Condensed, sans-serif",
             fontWeight: 600, characterSet: "auto", parameters: { depthCompare: "always" },
         }));
         if (!split) out.push(new ScatterplotLayer({
             id: "landmark-dots", data: LANDMARKS, getPosition: (d) => [d.lon, d.lat, 0],
-            getRadius: 3, radiusUnits: "pixels", getFillColor: [255, 255, 255], parameters: { depthCompare: "always" },
+            getRadius: 3, radiusUnits: "pixels", getFillColor: C.dot, parameters: { depthCompare: "always" },
         }));
         if (!split) out.push(new TextLayer({
             id: "landmarks", data: LANDMARKS, getPosition: (d) => [d.lon, d.lat, 0], getText: (d) => T().landmarks[d.k],
-            getSize: 12.5, getColor: [255, 255, 255], getTextAnchor: (d) => d.anchor, getPixelOffset: (d) => [d.anchor === "end" ? -7 : 7, 0],
+            getSize: 12.5, getColor: C.label, getTextAnchor: (d) => d.anchor, getPixelOffset: (d) => [d.anchor === "end" ? -7 : 7, 0],
             fontFamily: "Barlow, sans-serif", fontWeight: 600, characterSet: "auto",
-            outlineWidth: 3, outlineColor: [14, 17, 22, 230], fontSettings: { sdf: true },
+            outlineWidth: 3, outlineColor: C.halo, fontSettings: { sdf: true },
             parameters: { depthCompare: "always" }, updateTriggers: { getText: [state.lang] },
         }));
         return out;
@@ -951,7 +962,7 @@
             g.fillRect(x0, H - hr - he, w, he);
             if (state.hoverBar && b.from === state.hoverBar[0]) {
                 g.globalAlpha = 1;
-                g.fillStyle = "rgba(255, 244, 214, 0.9)";
+                g.fillStyle = C.histHot;
                 g.fillRect(x0 - 0.5, H - Math.max(hr + he, 3), w + 1, Math.max(hr + he, 3));
             }
         }
@@ -1084,6 +1095,7 @@
         document.documentElement.lang = l;
         document.title = t.pageTitle;
         document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t[el.dataset.i18n]; });
+        document.querySelectorAll(".theme-switch").forEach((el) => { el.textContent = (LIGHT ? { en: "Dark version", fr: "Version sombre", lb: "Donkel Versioun" } : { en: "Light version", fr: "Version claire", lb: "Hell Versioun" })[l]; });
         document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t[el.dataset.i18nTitle]; el.setAttribute("aria-label", el.title); });
         document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
         $("play").setAttribute("aria-label", state.playing ? t.pause : t.play);
@@ -1189,7 +1201,7 @@
             onInteractionStateChange: (s) => { if (s.isDragging || s.isRotating || s.isZooming) stopSpin(); },
             layers: [],
             getCursor: ({ isHovering }) => (isHovering ? "pointer" : "grab"),
-            parameters: { clearColor: [14 / 255, 17 / 255, 22 / 255, 1] },
+            parameters: { clearColor: [...C.clear.map((v) => v / 255), 1] },
         });
         computeHist();
         computeReignStats();

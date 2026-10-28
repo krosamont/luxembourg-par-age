@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <base href="../">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxembourg by Age</title>
+    <meta name="description"
+        content="All 23,373 buildings of Luxembourg City in 3D, coloured by the year they were built, told through the rulers who shaped the city. In English, French and Luxembourgish.">
+    <link rel="icon" href="data:,">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+/* Version claire de data-workers.com/projet/luxembourg_evolution/ (thème de /projet/mbappe_tirs/clair/) */
+:root {
+  --c-paper: #ebe7de; --c-sheet: #f6f3ec; --c-ink: #1d1b19; --c-ink2: #3b3833; --c-muted: #6f6a62; --c-faint: #9a948a;
+  --c-line: rgba(29,27,25,.14); --c-panel: rgba(246,243,236,.75); --c-blue: #2dc4c2; --c-blue-ink: #2dc4c2;   /* the cyan of the Data Workers logo */
+  --c-red: #cf6266; --c-red-ink: #b0353b; --c-frame: #c2393f; --c-font: 'Arvo', Rockwell, Georgia, serif;
+}
+
+.theme-switch { border: 1.5px solid var(--c-ink); border-radius: 2px; padding: 4px 11px; color: var(--c-ink); background: var(--c-paper);
+  font: 13px var(--c-font); text-decoration: none; white-space: nowrap; }
+.theme-switch:hover { background: var(--c-ink); color: var(--c-paper); }
+
+:root { --bg: var(--c-paper); --panel: rgba(246,243,236,.92); --line: rgba(29,27,25,.22); --text: var(--c-ink); --muted: var(--c-muted);
+  --accent: var(--c-frame); --water: #b2c6d6; --green: #cdd6be; }
+html, body { font-family: var(--c-font); }
+.brand h1, .legend h2, .tl-year strong, .tooltip .y { font-family: var(--c-font); letter-spacing: 0; }
+.brand h1 { font-size: 34px; text-shadow: 2px 2px 0 rgba(0,0,0,.08); }
+.seg, .toggle, .plain, #play, .legend, .story, .card, .view-tools button { border: 1.5px solid var(--c-ink) !important; border-radius: 2px !important; }
+.seg button { border-radius: 1px; }
+.seg button.on { background: var(--c-ink); color: var(--c-paper); }
+.legend, .story, .card { box-shadow: 4px 4px 0 rgba(0,0,0,.12); backdrop-filter: none; }
+.legend li:hover { background: rgba(29,27,25,.06); }
+.swatch.muted { background: #c8c3ba; }
+.tooltip, .tl-tip, .tl-bubble { background: var(--c-ink); color: #f3efe6; border-color: var(--c-ink); --text: #f3efe6; --muted: #bdb6aa; }
+.tooltip .tag, .card .tag { background: rgba(194,57,63,.1); }
+.timeline { background: linear-gradient(to top, rgba(235,231,222,.97) 55%, rgba(235,231,222,0)); }
+.tl-track::before { background: rgba(29,27,25,.18); }
+.tl-reign { background: rgba(29,27,25,.05); border-left-color: rgba(235,231,222,.9); }
+.tl-reign.alt { background: rgba(29,27,25,.09); }
+.tl-reign.on { background: rgba(194,57,63,.18); }
+.tl-event::before { background: rgba(29,27,25,.25); }
+.tl-event::after { background: rgba(29,27,25,.55); }
+.tl-guide { background: rgba(29,27,25,.5); }
+.story-text, .card-story { color: var(--c-ink2); }
+.story-nav { background: linear-gradient(to top, #f6f3ec 70%, rgba(246,243,236,0)); }
+.card { background: rgba(246,243,236,.97); }
+.card-story { background: rgba(194,57,63,.06); }
+.card-photo img { background: rgba(29,27,25,.05); }
+dialog { background: var(--c-sheet); border: 1.5px solid var(--c-ink); border-radius: 2px; }
+dialog::backdrop { background: rgba(29,27,25,.35); }
+dialog li { color: var(--c-ink2); }
+dialog code, .q-zoom { background: rgba(29,27,25,.06); }
+dialog a { border-bottom-color: rgba(194,57,63,.4); }
+.building { text-shadow: 0 1px 8px rgba(246,243,236,.9); }
+.tt-bio { color: #d8d2c6; }
+.controls .theme-switch { display: inline-flex; align-items: center; padding: 7px 12px; }
+</style>
+</head>
+
+<body class="story-on">
+    <div id="map"></div>
+
+    <header class="top">
+        <div class="brand">
+            <h1><span data-i18n="titleA">Luxembourg</span> <em data-i18n="titleB">by age</em></h1>
+            <p id="count"></p>
+        </div>
+        <button type="button" class="plain menu-btn" id="menu-btn" aria-expanded="false" aria-controls="controls"><span
+                data-i18n="menu">Options</span></button>
+        <nav class="controls" id="controls" aria-label="Display">
+            <div class="seg lang" role="group" aria-label="Language">
+                <button type="button" data-lang="en" lang="en">EN</button>
+                <button type="button" data-lang="fr" lang="fr">FR</button>
+                <button type="button" data-lang="lb" lang="lb">LB</button>
+            </div>
+            <div class="seg" role="group" aria-label="Colour by">
+                <button type="button" data-mode="period" class="on" data-i18n="period">Period</button>
+                <button type="button" data-mode="height" data-i18n="height">Height</button>
+                <button type="button" data-mode="use" data-i18n="use">Use</button>
+            </div>
+            <button type="button" class="toggle on" id="t-story" aria-pressed="true"><i></i><span
+                    data-i18n="story">Story</span></button>
+            <button type="button" class="toggle" id="t-split" aria-pressed="false"><i></i><span
+                    data-i18n="split">Quarters</span></button>
+            <button type="button" class="toggle on" id="t-context" aria-pressed="true"><i></i><span
+                    data-i18n="context">Water &amp; parks</span></button>
+            <button type="button" class="toggle" id="t-recorded" aria-pressed="false"><i></i><span
+                    data-i18n="recorded">Recorded dates only</span></button>
+            <button type="button" class="plain" id="open-about" data-i18n="about">About the data</button>
+            <a class="theme-switch" href="./">Dark version</a>
+        </nav>
+    </header>
+
+    <aside class="legend" id="legend">
+        <h2 id="legend-title"></h2>
+        <div class="ramp" id="ramp"></div>
+        <ul id="legend-list"></ul>
+        <p class="legend-note"><span class="swatch muted"></span><span data-i18n="legendNote"></span></p>
+    </aside>
+
+    <section class="story" id="story" aria-live="polite">
+        <div class="story-head">
+            <span id="story-step"></span>
+            <button type="button" class="story-more" id="story-more" aria-expanded="false"></button>
+            <button type="button" class="close-story" id="close-story">×</button>
+        </div>
+        <figure class="story-photo" id="story-photo">
+            <img id="story-img" alt="" loading="lazy">
+            <figcaption id="story-credit"></figcaption>
+        </figure>
+        <p class="story-year" id="story-year"></p>
+        <h2 id="story-title"></h2>
+        <p class="story-ruler" id="story-ruler"></p>
+        <p class="story-text" id="story-text"></p>
+        <div class="story-links" id="story-links"></div>
+        <div class="story-nav">
+            <button type="button" id="story-prev"></button>
+            <button type="button" id="story-next" class="primary"></button>
+        </div>
+    </section>
+
+    <div class="view-tools" role="group" aria-label="View">
+        <button type="button" id="rot-left" data-i18n-title="rotLeft">↺</button>
+        <button type="button" id="compass" data-i18n-title="north"><svg viewBox="0 0 24 24" id="compass-needle"
+                aria-hidden="true">
+                <path d="M12 2l4 10h-8z" fill="#e8484e" />
+                <path d="M12 22l-4-10h8z" fill="#9099a8" />
+            </svg></button>
+        <button type="button" id="rot-right" data-i18n-title="rotRight">↻</button>
+        <button type="button" id="spin" aria-pressed="false" data-i18n-title="spin">360°</button>
+        <button type="button" id="tilt" data-i18n-title="tilt">2D/3D</button>
+    </div>
+
+    <div class="tooltip" id="tooltip" hidden></div>
+
+    <section class="card" id="card" hidden aria-live="polite">
+        <button type="button" class="close-story" id="close-card">×</button>
+        <div id="card-body"></div>
+    </section>
+
+    <footer class="timeline">
+        <div class="tl-head">
+            <button type="button" id="play"><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                </svg></button>
+            <div class="tl-year">
+                <div><strong id="year-label">2025</strong> <span id="range-label"></span></div>
+                <div class="tl-ruler" id="ruler-label"></div>
+            </div>
+            <p class="tl-note" data-i18n="note"></p>
+        </div>
+        <div class="tl-track" id="track">
+            <div class="tl-rulers" id="rulers"></div>
+            <div class="tl-events" id="events"></div>
+            <div class="tl-bubble" id="bubble" hidden></div>
+            <div class="tl-tip" id="tl-tip" hidden></div>
+            <div class="tl-guide" id="tl-guide" hidden></div>
+            <canvas id="hist"></canvas>
+            <div class="tl-range" id="range-fill"></div>
+            <button type="button" class="handle" id="h-lo"></button>
+            <button type="button" class="handle" id="h-hi"></button>
+            <div class="tl-axis" id="axis"></div>
+        </div>
+    </footer>
+
+    <dialog id="about">
+        <button type="button" class="close" id="close-about" data-i18n="close">Close</button>
+        <div id="about-body"></div>
+    </dialog>
+
+    <div class="loading" id="loading">…</div>
+    <div class="building" id="building" hidden></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/deck.gl@9.2.11/dist.min.js"></script>
+    <script src="i18n.js"></script>
+    <script src="story.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
