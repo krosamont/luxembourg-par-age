@@ -20,14 +20,23 @@ a.theme-switch { position: fixed !important; top: 14px !important; right: 14px !
 a.theme-switch:hover { border-color: #2dc4c2 !important; color: #fff !important; }
 @media (max-width: 600px) { a.theme-switch { top: 10px !important; right: 10px !important; width: 38px; height: 38px; padding: 0 !important; justify-content: center; font-size: 0 !important; line-height: 0 !important; } a.theme-switch::before { content: ''; width: 19px; height: 19px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='4.2'/%3E%3Cpath d='M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='4.2'/%3E%3Cpath d='M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6'/%3E%3C/svg%3E") center / contain no-repeat; } }
 </style>
+<style id="sitenav">
+/* fil d'Ariane et pied, comme les autres pages projet de data-workers.com */
+.sitenav { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font: 13px/1 Inter, -apple-system, sans-serif; pointer-events: auto; }
+.sitenav img { width: 22px; height: 22px; }
+.sitenav a { color: #94a3b8; text-decoration: none; } .sitenav a:hover { color: #f8fafc; }
+.sitenav span { color: #475569; }
+.sitefoot { margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12); font-size: 12px; color: #94a3b8; }
+.sitefoot a { color: #cbd5e1; }
+</style>
 </head>
 
 <body class="story-on">
-    <a class="theme-switch" href="clair/">Light version</a>
     <div id="map"></div>
 
     <header class="top">
         <div class="brand">
+            <nav class="sitenav" aria-label="Data Workers"><img src="/assets/images/logo.png" alt=""><a href="/">Data Workers</a><span>/</span><a href="/projet/">Projets</a><a class="switch theme-switch" href="clair/">Version claire</a></nav>
             <h1><span data-i18n="titleA">Luxembourg</span> <em data-i18n="titleB">by age</em></h1>
             <p id="count"></p>
         </div>
@@ -131,6 +140,7 @@ a.theme-switch:hover { border-color: #2dc4c2 !important; color: #fff !important;
     <dialog id="about">
         <button type="button" class="close" id="close-about" data-i18n="close">Close</button>
         <div id="about-body"></div>
+        <footer class="sitefoot"><a href="/">data-workers.com</a> · Kevin Rosamont Prombo · Données : ACT, Wikidata, OpenStreetMap</footer>
     </dialog>
 
     <div class="loading" id="loading">…</div>
