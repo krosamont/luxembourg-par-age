@@ -1076,6 +1076,13 @@
         }
     }
 
+    /* ---------- mobile : outils de vue juste sous l'en-tête (sa hauteur dépend de la langue, du thème et du fil d'Ariane) ---------- */
+    function placeTools() {
+        const tools = document.querySelector(".view-tools"), top = document.querySelector(".top");
+        if (!tools || !top) return;
+        tools.style.top = innerWidth <= 760 ? Math.round(top.getBoundingClientRect().bottom + 8) + "px" : "";
+    }
+
     /* ---------- language ---------- */
     function pickLang() {
         const q = new URLSearchParams(location.search).get("lang");
@@ -1084,8 +1091,9 @@
             const s = localStorage.getItem("lux-age-lang");
             if (I18N[s]) return s;
         } catch (e) { /* storage blocked */ }
-        const nav = (navigator.language || "en").slice(0, 2).toLowerCase();
-        return I18N[nav] ? nav : "en";
+        // sinon la langue de la page (fr sur data-workers.com, les pages anglaises du site ajoutent ?lang=en)
+        const page = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase();
+        return I18N[page] ? page : "fr";
     }
 
     function setLang(l) {
@@ -1093,6 +1101,7 @@
         try { localStorage.setItem("lux-age-lang", l); } catch (e) { /* storage blocked */ }
         const t = T();
         document.documentElement.lang = l;
+        requestAnimationFrame(placeTools);
         document.title = t.pageTitle;
         document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t[el.dataset.i18n]; });
         document.querySelectorAll(".theme-switch").forEach((el) => { el.textContent = (LIGHT ? { en: "Dark version", fr: "Version sombre", lb: "Donkel Versioun" } : { en: "Light version", fr: "Version claire", lb: "Hell Versioun" })[l]; });
@@ -1208,6 +1217,8 @@
         buildAxis();
         wire();
         setLang(state.lang);
+        placeTools();
+        addEventListener("resize", placeTools);
         $("loading").classList.add("done");
         buildCity();
     }
